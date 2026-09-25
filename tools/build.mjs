@@ -16,6 +16,7 @@ const paths = {
   questions: resolve(root, "data/questions.json"),
   photos: resolve(root, "img/opt"),
   out: resolve(root, "dist/index.html"),
+  site: resolve(root, "index.html"),
 };
 
 const IMAGE_EXT = /\.(webp|png|jpe?g)$/i;
@@ -86,9 +87,11 @@ async function main() {
 
   await mkdir(dirname(paths.out), { recursive: true });
   await writeFile(paths.out, html, "utf8");
+  await writeFile(paths.site, html, "utf8");
 
   const kb = (value) => `${(value / 1024).toFixed(1)} КБ`;
   console.log(`Собрано: ${paths.out}`);
+  console.log(`  копия для GitHub Pages: ${paths.site}`);
   console.log(`  размер: ${kb(Buffer.byteLength(html))}`);
   console.log(`  мест: ${places.length}, вопросов: ${questions.length}`);
   console.log(`  фото встроено: ${Object.keys(photos).length}, заглушек: ${places.length - Object.keys(photos).length}`);
