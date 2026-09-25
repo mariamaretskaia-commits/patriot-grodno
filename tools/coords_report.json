@@ -1,0 +1,379 @@
+[
+  {
+    "id": "kurgan-slavy-grodno",
+    "title": "Курган Славы",
+    "status": "verified",
+    "current": [
+      53.672251,
+      23.869173
+    ],
+    "found": true,
+    "suggested": [
+      53.672251,
+      23.869173
+    ],
+    "distance_m": 0,
+    "is_object": true,
+    "verdict": "ok",
+    "query": "Курган Славы, Гродно, Беларусь",
+    "name": "Курган Славы, проспект Космонавтов, Восток, Октябрьский район, Гродно, Гродненская область, 230003, Беларусь",
+    "osm_type": "viewpoint"
+  },
+  {
+    "id": "tank-t34-grodno",
+    "title": "Памятник «Танк Т-34»",
+    "status": "verified",
+    "current": [
+      53.675819,
+      23.828941
+    ],
+    "found": true,
+    "suggested": [
+      53.672409,
+      23.826638
+    ],
+    "distance_m": 408,
+    "is_object": false,
+    "verdict": "reference",
+    "query": "улица Мостовая, Гродно, Беларусь",
+    "name": "Мостовая улица, Переселка, Ленинский район, Гродно, Гродненская область, 240025, Беларусь",
+    "osm_type": "secondary"
+  },
+  {
+    "id": "memorial-pogranichnikam-grodno",
+    "title": "Мемориал воинам-пограничникам",
+    "status": "review",
+    "current": [
+      53.674225,
+      23.786144
+    ],
+    "found": true,
+    "suggested": [
+      53.674225,
+      23.786144
+    ],
+    "distance_m": 0,
+    "is_object": false,
+    "verdict": "reference",
+    "query": "улица Советских пограничников, Гродно, Беларусь",
+    "name": "улица Советских Пограничников, Лососно, Фолюш, Октябрьский район, Гродно, Гродненская область, 230027, Беларусь",
+    "osm_type": "secondary"
+  },
+  {
+    "id": "shtalag-324-grodno",
+    "title": "Мемориал на месте Шталага-324 (Фолюш)",
+    "status": "verified",
+    "current": [
+      53.653306,
+      23.776907
+    ],
+    "found": true,
+    "suggested": [
+      53.653306,
+      23.776907
+    ],
+    "distance_m": 0,
+    "is_object": true,
+    "verdict": "ok",
+    "query": "Шталаг-324, Гродно, Беларусь",
+    "name": "Імены палонных Шталаг 324, Улица Фолюш, Фолюш, Октябрьский район, Гродно, Гродненская область, 230006, Беларусь",
+    "osm_type": "memorial"
+  },
+  {
+    "id": "fort-2-naumovichi",
+    "title": "Форт №2 Гродненской крепости",
+    "status": "review",
+    "current": [
+      53.717292,
+      23.669414
+    ],
+    "found": true,
+    "suggested": [
+      53.721367,
+      23.711151
+    ],
+    "distance_m": 2783,
+    "is_object": false,
+    "verdict": "reference",
+    "query": "Наумовичи, Гродненский район, Беларусь",
+    "name": "Наумовичи, Подлабенский сельский Совет, Гродненский район, Гродненская область, Беларусь",
+    "osm_type": "administrative"
+  },
+  {
+    "id": "fort-1-zagorany",
+    "title": "Форт №1 Гродненской крепости",
+    "status": "verified",
+    "current": [
+      53.733717,
+      23.711713
+    ],
+    "found": true,
+    "suggested": [
+      53.731299,
+      23.706777
+    ],
+    "distance_m": 422,
+    "is_object": false,
+    "verdict": "reference",
+    "query": "Загораны, Гродненский район, Беларусь",
+    "name": "Загораны, Подлабенский сельский Совет, Гродненский район, Гродненская область, Беларусь",
+    "osm_type": "administrative"
+  },
+  {
+    "id": "dot-sonichi",
+    "title": "ДОТ-памятник советским воинам (Соничи)",
+    "status": "catalog",
+    "current": [
+      53.873779,
+      23.676766
+    ],
+    "found": true,
+    "suggested": [
+      53.872522,
+      23.679258
+    ],
+    "distance_m": 215,
+    "is_object": false,
+    "verdict": "reference",
+    "query": "Соничи, Гродненский район, Беларусь",
+    "name": "Соничи, Сопоцкинский сельский Совет, Гродненский район, Гродненская область, Беларусь",
+    "osm_type": "administrative"
+  },
+  {
+    "id": "memorial-smorgon",
+    "title": "Мемориальный комплекс Первой мировой войны",
+    "status": "review",
+    "current": [
+      54.481782,
+      26.401282
+    ],
+    "found": true,
+    "suggested": [
+      54.481782,
+      26.401282
+    ],
+    "distance_m": 0,
+    "is_object": false,
+    "verdict": "reference",
+    "query": "Сморгонь, Беларусь",
+    "name": "Сморгонь, Сморгонский район, Гродненская область, Беларусь",
+    "osm_type": "administrative"
+  },
+  {
+    "id": "memorial-lida",
+    "title": "Лидский Курган Бессмертия",
+    "status": "verified",
+    "current": [
+      53.892308,
+      25.315237
+    ],
+    "found": true,
+    "suggested": [
+      53.892308,
+      25.315237
+    ],
+    "distance_m": 0,
+    "is_object": true,
+    "verdict": "ok",
+    "query": "Курган Бессмертия, Лида, Беларусь",
+    "name": "Курган Бессмертия, улица Митрополита Филарета, Лида, Лидский район, Гродненская область, 231286, Беларусь",
+    "osm_type": "memorial"
+  },
+  {
+    "id": "memorial-berestovitsa",
+    "title": "Мемориал Славы (Большая Берестовица)",
+    "status": "catalog",
+    "current": [
+      53.19272,
+      24.018328
+    ],
+    "found": true,
+    "suggested": [
+      53.193058,
+      24.017197
+    ],
+    "distance_m": 84,
+    "is_object": false,
+    "verdict": "reference",
+    "query": "Большая Берестовица, Беларусь",
+    "name": "Большая Берестовица, Берестовицкий район, Гродненская область, Беларусь",
+    "osm_type": "administrative"
+  },
+  {
+    "id": "memorial-korelichi",
+    "title": "Мемориальный комплекс «Звезда» (Кореличи)",
+    "status": "verified",
+    "current": [
+      53.575912,
+      26.133453
+    ],
+    "found": true,
+    "suggested": [
+      53.575912,
+      26.133453
+    ],
+    "distance_m": 0,
+    "is_object": true,
+    "verdict": "ok",
+    "query": "мемориал Звезда, Кореличи, Беларусь",
+    "name": "Мемориальный комплекс «Звезда», улица 8 Марта, Кореличи, Кореличский район, Гродненская область, 231430, Беларусь",
+    "osm_type": "memorial"
+  },
+  {
+    "id": "memorial-dyatlovo",
+    "title": "Мемориал «Дети лихолетья» (Дятлово)",
+    "status": "review",
+    "current": [
+      53.4657,
+      25.405348
+    ],
+    "found": true,
+    "suggested": [
+      53.4657,
+      25.405348
+    ],
+    "distance_m": 0,
+    "is_object": false,
+    "verdict": "reference",
+    "query": "Дятлово, Беларусь",
+    "name": "Дятлово, Дятловский район, Гродненская область, Беларусь",
+    "osm_type": "administrative"
+  },
+  {
+    "id": "pamyatnik-budenovka",
+    "title": "Памятник воинам-землякам (Буденовка)",
+    "status": "catalog",
+    "current": [
+      54.421667,
+      25.895278
+    ],
+    "found": true,
+    "suggested": [
+      54.42112,
+      25.903099
+    ],
+    "distance_m": 510,
+    "is_object": false,
+    "verdict": "reference",
+    "query": "Буденовка, Ошмянский район, Беларусь",
+    "name": "Буденовка, Кольчунский сельский Совет, Ошмянский район, Гродненская область, 231107, Беларусь",
+    "osm_type": "administrative"
+  },
+  {
+    "id": "pamyatnik-kreivantsy",
+    "title": "Памятник воинам-землякам (Крейванцы)",
+    "status": "catalog",
+    "current": [
+      54.391389,
+      25.7475
+    ],
+    "found": true,
+    "suggested": [
+      54.390991,
+      25.749121
+    ],
+    "distance_m": 114,
+    "is_object": false,
+    "verdict": "reference",
+    "query": "Крейванцы, Ошмянский район, Беларусь",
+    "name": "Крейванцы, Крейванцевский сельский Совет, Ошмянский район, Гродненская область, Беларусь",
+    "osm_type": "administrative"
+  },
+  {
+    "id": "pamyatnik-mostiishki",
+    "title": "Памятник воинам-землякам (Мостилишки)",
+    "status": "catalog",
+    "current": [
+      54.381111,
+      26.015
+    ],
+    "found": false,
+    "suggested": null,
+    "distance_m": null,
+    "is_object": false,
+    "verdict": "missing",
+    "query": null,
+    "name": null,
+    "osm_type": null
+  },
+  {
+    "id": "pamyatnik-semerniki",
+    "title": "Памятник воинам-землякам (Семерники)",
+    "status": "catalog",
+    "current": [
+      54.230278,
+      26.075
+    ],
+    "found": true,
+    "suggested": [
+      54.237179,
+      26.069269
+    ],
+    "distance_m": 853,
+    "is_object": false,
+    "verdict": "reference",
+    "query": "Семерники, Ошмянский район, Беларусь",
+    "name": "Семерники, Гольшанский сельский Совет, Ошмянский район, Гродненская область, Беларусь",
+    "osm_type": "administrative"
+  },
+  {
+    "id": "pamyatnik-artilleriya-volkovysk",
+    "title": "Памятник артиллерийскому орудию (Волковыск)",
+    "status": "review",
+    "current": [
+      53.1534,
+      24.433
+    ],
+    "found": true,
+    "suggested": [
+      53.164729,
+      24.458169
+    ],
+    "distance_m": 2098,
+    "is_object": false,
+    "verdict": "reference",
+    "query": "Волковыск, Беларусь",
+    "name": "Волковыск, Волковысский район, Гродненская область, Беларусь",
+    "osm_type": "administrative"
+  },
+  {
+    "id": "obelsk-belkovshchina",
+    "title": "Обелиск землякам (Белковщина)",
+    "status": "catalog",
+    "current": [
+      54.4536,
+      26.3207
+    ],
+    "found": true,
+    "suggested": [
+      54.453335,
+      26.319887
+    ],
+    "distance_m": 60,
+    "is_object": false,
+    "verdict": "reference",
+    "query": "Белковщина, Сморгонский район, Беларусь",
+    "name": "Белковщина, Кореневский сельский Совет, Сморгонский район, Гродненская область, 231035, Беларусь",
+    "osm_type": "administrative"
+  },
+  {
+    "id": "yuratishki-bratskaya",
+    "title": "Братская могила (Юратишки)",
+    "status": "review",
+    "current": [
+      54.032826,
+      25.925785
+    ],
+    "found": true,
+    "suggested": [
+      54.032826,
+      25.925785
+    ],
+    "distance_m": 0,
+    "is_object": false,
+    "verdict": "reference",
+    "query": "Юратишки, Ивьевский район, Беларусь",
+    "name": "Юратишки, Ивьевский район, Гродненская область, Беларусь",
+    "osm_type": "administrative"
+  }
+]

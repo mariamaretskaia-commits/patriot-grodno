@@ -1,0 +1,13 @@
+{
+  "name": "patriot-grodno",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Одностраничное приложение о памятниках Гродненщины: карта, викторина, паспорт патриота",
+  "scripts": {
+    "build": "node tools/build.mjs",
+    "images": "python tools/optimize_images.py",
+    "coords": "python tools/verify_coords.py",
+    "serve": "python -m http.server 8000"
+  }
+}

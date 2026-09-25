@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<meta name="theme-color" content="#17212b">
+<title>Память Гродненщины</title>
+<style>/*{{LEAFLET_CSS}}*/</style>
+<style>/*{{CSS}}*/</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-row">
+    <div class="brand">
+      <span class="brand-mark">★</span>
+      <div>
+        <div class="brand-title">Память Гродненщины</div>
+        <div class="brand-sub" id="brandSub">19 мест памяти</div>
+      </div>
+    </div>
+    <div class="score" id="scoreBox">
+      <div class="score-value" id="scoreValue">0</div>
+      <div class="score-label">очков</div>
+    </div>
+  </div>
+  <div class="progress" id="progressWrap">
+    <div class="progress-head">
+      <span>Паспорт патриота</span>
+      <span id="progressText">0 / 19</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+  <nav class="tabs" id="tabs">
+    <button class="tab is-active" data-tab="map" type="button">Карта</button>
+    <button class="tab" data-tab="quiz" type="button">Викторина</button>
+    <button class="tab" data-tab="passport" type="button">Паспорт</button>
+  </nav>
+</header>
+
+<main>
+  <section class="view is-active" id="view-map">
+    <div class="filters">
+      <label class="field">
+        <span class="field-label">Район</span>
+        <select id="filterDistrict"></select>
+      </label>
+      <label class="field">
+        <span class="field-label">Тип</span>
+        <select id="filterType"></select>
+      </label>
+      <label class="field field-wide">
+        <span class="field-label">Поиск</span>
+        <input id="filterSearch" type="search" placeholder="Название или описание" autocomplete="off">
+      </label>
+      <button class="btn-reset" id="filterReset" type="button">Сбросить</button>
+    </div>
+
+    <div class="map-wrap">
+      <div id="map"></div>
+      <div class="map-note" id="mapNote" hidden>Для загрузки подложки карты нужен интернет. Список мест доступен без сети.</div>
+    </div>
+
+    <div class="list-head">
+      <h2>Места памяти</h2>
+      <span class="list-count" id="listCount"></span>
+    </div>
+    <ul class="place-list" id="placeList"></ul>
+  </section>
+
+  <section class="view" id="view-quiz">
+    <div class="quiz-head">
+      <div>
+        <div class="quiz-title">Викторина</div>
+        <div class="quiz-meta" id="quizMeta">Вопрос 1 из 15</div>
+      </div>
+      <div class="quiz-score" id="quizScore">0</div>
+    </div>
+    <div class="progress-track quiz-track"><div class="progress-fill" id="quizFill"></div></div>
+
+    <div class="quiz-card" id="quizCard">
+      <div class="quiz-question" id="quizQuestion"></div>
+      <div class="quiz-options" id="quizOptions"></div>
+      <div class="quiz-feedback" id="quizFeedback" hidden>
+        <div class="quiz-verdict" id="quizVerdict"></div>
+        <p class="quiz-explanation" id="quizExplanation"></p>
+      </div>
+      <div class="quiz-actions">
+        <button class="btn btn-primary" id="quizNext" type="button" hidden>Следующий вопрос</button>
+        <button class="btn btn-ghost" id="quizRestart" type="button" hidden>Пройти заново</button>
+      </div>
+    </div>
+
+    <div class="quiz-finish" id="quizFinish" hidden>
+      <div class="finish-score" id="finishScore"></div>
+      <p class="finish-text" id="finishText"></p>
+      <button class="btn btn-primary" id="finishRestart" type="button">Пройти ещё раз</button>
+    </div>
+  </section>
+
+  <section class="view" id="view-passport">
+    <div class="passport-card">
+      <div class="passport-top">
+        <div class="passport-avatar">★</div>
+        <div>
+          <div class="passport-rank" id="passportRank">Начинающий</div>
+          <div class="passport-sub" id="passportSub">0 очков</div>
+        </div>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="passportFill"></div></div>
+      <div class="stat-grid">
+        <div class="stat"><div class="stat-value" id="statVisited">0</div><div class="stat-label">мест посещено</div></div>
+        <div class="stat"><div class="stat-value" id="statQuiz">0</div><div class="stat-label">верных ответов</div></div>
+        <div class="stat"><div class="stat-value" id="statPhotos">0</div><div class="stat-label">своих фото</div></div>
+        <div class="stat"><div class="stat-value" id="statBadges">0</div><div class="stat-label">значков</div></div>
+      </div>
+    </div>
+
+    <h2 class="section-title">Значки</h2>
+    <div class="badges" id="badges"></div>
+
+    <h2 class="section-title">Источники данных</h2>
+    <ul class="sources" id="sources"></ul>
+
+    <div class="passport-actions">
+      <button class="btn btn-primary" id="shareBtn" type="button">Поделиться результатом</button>
+      <button class="btn btn-ghost" id="resetProgress" type="button">Сбросить прогресс</button>
+    </div>
+    <p class="disclaimer" id="coordNote"></p>
+  </section>
+</main>
+
+<div class="sheet" id="sheet" hidden>
+  <div class="sheet-backdrop" id="sheetBackdrop"></div>
+  <div class="sheet-panel" id="sheetPanel" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+    <div class="sheet-handle"></div>
+    <button class="sheet-close" id="sheetClose" type="button" aria-label="Закрыть">✕</button>
+    <div class="sheet-body" id="sheetBody"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script>/*{{LEAFLET_JS}}*/</script>
+<script>/*{{DATA}}*/</script>
+<script>/*{{APP_JS}}*/</script>
+</body>
+</html>
