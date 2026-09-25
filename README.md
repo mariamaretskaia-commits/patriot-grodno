@@ -9,6 +9,9 @@
 Откройте `dist/index.html` двойным кликом. Интернет нужен только для подложки карты:
 список мест, карточки, викторина и паспорт работают без сети.
 
+Развёрнутая версия: <https://mariamaretskaia-commits.github.io/patriot-grodno/>
+(идёт из корня репозитория, поэтому `index.html` в корне — та же собранная копия).
+
 ## Разработка
 
 ```bash
@@ -36,11 +39,12 @@ patriot-grodno/
 │   ├── raw/                исходные фотографии (имена = id мест)
 │   └── opt/                сжатые WebP 400px, до 20 КБ
 ├── tools/
-│   ├── build.mjs           сборка single-file в dist/
+│   ├── build.mjs           сборка single-file в dist/ и в корень сайта
 │   ├── optimize_images.py  подготовка фото
 │   ├── verify_coords.py    сверка координат с OpenStreetMap
 │   └── coords_report.md    журнал сверки
-└── dist/index.html         готовый файл для сдачи
+├── dist/index.html         готовый файл для сдачи
+└── index.html              та же сборка, публикуется через GitHub Pages
 ```
 
 ## Как добавить фотографии
