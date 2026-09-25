@@ -19,6 +19,7 @@
   var places = [];
   var questions = [];
   var photos = {};
+  var photoCredits = {};
   var map = null;
   var markers = {};
   var activeId = null;
@@ -205,25 +206,33 @@
     return 2 * 6371000 * Math.asin(Math.sqrt(h));
   }
 
-  function placeholderFor(place) {
-    var label = escapeHtml(place.type || "память");
-    var mark = escapeHtml((place.title || "★").slice(0, 1));
-    var svg =
-      '<svg xmlns="http://www.w3.org/2000/svg" width="320" height="320" viewBox="0 0 320 320">' +
-      '<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">' +
-      '<stop offset="0" stop-color="#2b5278"/><stop offset="1" stop-color="#1e2a36"/>' +
-      '</linearGradient></defs>' +
-      '<rect width="320" height="320" fill="url(#g)"/>' +
-      '<text x="160" y="150" font-size="92" text-anchor="middle" fill="#e8b64c" opacity="0.85" ' +
-      'font-family="Arial, sans-serif">' + mark + "</text>" +
-      '<text x="160" y="215" font-size="26" text-anchor="middle" fill="#a9c8e4" opacity="0.9" ' +
-      'font-family="Arial, sans-serif">' + label + "</text>" +
-      "</svg>";
-    return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+  function photoSrc(place) {
+    return photos[place.id] || "";
   }
 
-  function photoSrc(place) {
-    return photos[place.id] || placeholderFor(place);
+  function hasPhoto(place) {
+    return Boolean(photos[place.id]);
+  }
+
+  function photoBlock(place) {
+    if (hasPhoto(place)) {
+      return '<img class="card-photo" src="' + photoSrc(place) + '" alt="' + escapeHtml(place.title) + '">';
+    }
+    return '<div class="card-photo-fallback">Фото пока нет</div>';
+  }
+
+  function creditBlock(place) {
+    var credit = photoCredits[place.id];
+    if (!credit) return "";
+    var parts = [];
+    if (credit.author) parts.push("Автор: " + credit.author);
+    if (credit.license) parts.push("Лицензия: " + credit.license);
+    if (credit.date) parts.push("Дата: " + String(credit.date).slice(0, 10));
+    return '<div class="card-credit">Фото: Wikimedia Commons, ' + escapeHtml(parts.join(" · ")) +
+      ' · снимок уменьшен' +
+      (credit.source_url ? ' · <a class="card-credit-link" data-url="' + escapeHtml(credit.source_url) + '" href="' + escapeHtml(credit.source_url) + '" target="_blank" rel="noopener noreferrer">источник</a>' : "") +
+      (credit.license_url ? ' · <a class="card-credit-link" data-url="' + escapeHtml(credit.license_url) + '" href="' + escapeHtml(credit.license_url) + '" target="_blank" rel="noopener noreferrer">условия</a>' : "") +
+      "</div>";
   }
 
   function coordTag(place) {
@@ -277,9 +286,12 @@
 
     el.placeList.innerHTML = visible.map(function (place) {
       var isVisited = Boolean(state.visited[place.id]);
+      var thumb = hasPhoto(place)
+        ? '<span class="place-thumb"><img src="' + photoSrc(place) + '" alt="" loading="lazy"></span>'
+        : '<span class="place-thumb place-thumb-empty">' + escapeHtml((place.title || "★").slice(0, 1)) + "</span>";
       return '<li><button type="button" class="place-card' + (isVisited ? " is-visited" : "") +
         '" data-id="' + escapeHtml(place.id) + '">' +
-        '<span class="place-thumb"><img src="' + photoSrc(place) + '" alt="" loading="lazy"></span>' +
+        thumb +
         '<span class="place-main">' +
         '<span class="place-name">' + escapeHtml(place.title) + "</span>" +
         '<span class="place-meta">' + escapeHtml(place.district) + " · " + escapeHtml(place.period) + "</span>" +
@@ -376,7 +388,8 @@
     var ownPhoto = state.photos[place.id] ? '<div class="photo-strip"><img id="ownPhoto" alt="Ваше фото"></div>' : "";
 
     el.sheetBody.innerHTML =
-      '<img class="card-photo" src="' + photoSrc(place) + '" alt="' + escapeHtml(place.title) + '">' +
+      photoBlock(place) +
+      creditBlock(place) +
       '<div class="card-title" id="sheetTitle">' + escapeHtml(place.title) + "</div>" +
       '<div class="card-meta">' + escapeHtml(place.short) + "</div>" +
       '<div class="card-tags">' + tags + "</div>" +
@@ -648,6 +661,19 @@
     }).join("");
   }
 
+  function openExternalLink(url) {
+    var api = tg();
+    if (api) {
+      try {
+        if (typeof api.openLink === "function") {
+          api.openLink(url, { try_instant_view: false });
+          return;
+        }
+      } catch (err) {}
+    }
+    window.open(url, "_blank", "noopener");
+  }
+
   function renderSources() {
     var seen = {};
     places.forEach(function (place) {
@@ -656,6 +682,8 @@
       seen[text] = true;
       el.sources.innerHTML += "<li>" + escapeHtml(text) + "</li>";
     });
+    el.sources.innerHTML += "<li>Фотографии: Wikimedia Commons, свободные лицензии " +
+      "(CC0, CC BY-SA). Снимки уменьшены, авторы и условия указаны в карточках мест.</li>";
   }
 
   function renderCoordNote() {
@@ -759,6 +787,13 @@
 
     el.sheetBackdrop.addEventListener("click", closeSheet);
     el.sheetClose.addEventListener("click", closeSheet);
+    el.sheetBody.addEventListener("click", function (event) {
+      var link = event.target.closest(".card-credit-link");
+      if (!link) return;
+      event.preventDefault();
+      event.stopPropagation();
+      if (link.dataset.url) openExternalLink(link.dataset.url);
+    });
     document.addEventListener("keydown", function (event) {
       if (event.key === "Escape" && !el.sheet.hidden) closeSheet();
     });
@@ -778,6 +813,7 @@
       places = window.PLACES;
       questions = window.QUESTIONS;
       photos = window.PHOTOS || {};
+      photoCredits = window.PHOTO_CREDITS || {};
       return Promise.resolve();
     }
     return Promise.all([
@@ -787,6 +823,7 @@
       places = result[0];
       questions = result[1];
       photos = window.PHOTOS || {};
+      photoCredits = window.PHOTO_CREDITS || {};
     });
   }
 

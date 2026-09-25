@@ -14,6 +14,7 @@ const paths = {
   leafletJs: resolve(root, "src/vendor/leaflet/leaflet.js"),
   places: resolve(root, "data/places.json"),
   questions: resolve(root, "data/questions.json"),
+  credits: resolve(root, "data/photo_credits.json"),
   photos: resolve(root, "img/opt"),
   out: resolve(root, "dist/index.html"),
   site: resolve(root, "index.html"),
@@ -65,14 +66,21 @@ async function main() {
   const photos = await collectPhotos();
   const places = JSON.parse(await readText(paths.places));
   const questions = JSON.parse(await readText(paths.questions));
+  const credits = existsSync(paths.credits) ? JSON.parse(await readText(paths.credits)) : {};
+  const photoCredits = {};
+  for (const [id, credit] of Object.entries(credits)) {
+    if (photos[id]) photoCredits[id] = credit;
+  }
 
   const data = [
     `const PLACES = ${JSON.stringify(places)};`,
     `const QUESTIONS = ${JSON.stringify(questions)};`,
     `const PHOTOS = ${JSON.stringify(photos)};`,
+    `const PHOTO_CREDITS = ${JSON.stringify(photoCredits)};`,
     "window.PLACES = PLACES;",
     "window.QUESTIONS = QUESTIONS;",
-    "window.PHOTOS = PHOTOS;"
+    "window.PHOTOS = PHOTOS;",
+    "window.PHOTO_CREDITS = PHOTO_CREDITS;"
   ].join("\n");
 
   let html = await readText(paths.template);
@@ -95,6 +103,9 @@ async function main() {
   console.log(`  размер: ${kb(Buffer.byteLength(html))}`);
   console.log(`  мест: ${places.length}, вопросов: ${questions.length}`);
   console.log(`  фото встроено: ${Object.keys(photos).length}, заглушек: ${places.length - Object.keys(photos).length}`);
+  if (Object.keys(photoCredits).length !== Object.keys(photos).length) {
+    console.log(`  внимание: кредитов ${Object.keys(photoCredits).length}, фото ${Object.keys(photos).length}`);
+  }
   if (Object.keys(photos).length === 0) {
     console.log("  подсказка: положите фото в img/raw и запустите python tools/optimize_images.py");
   }

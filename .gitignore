@@ -3,4 +3,6 @@ node_modules/
 Thumbs.db
 img/raw/*
 !img/raw/.gitkeep
+img/photo_candidates.json
+__pycache__/
 *.log

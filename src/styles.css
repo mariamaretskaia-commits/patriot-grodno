@@ -194,6 +194,10 @@ button { font: inherit; color: inherit; }
   flex: none;
 }
 .place-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.place-thumb-empty {
+  background: linear-gradient(145deg, var(--tg-accent), var(--tg-surface-2));
+  font-weight: 700;
+}
 
 .place-main { min-width: 0; }
 .place-name { font-weight: 600; font-size: .95rem; line-height: 1.25; }
@@ -367,6 +371,15 @@ button { font: inherit; color: inherit; }
   text-align: center;
   padding: 0 20px;
 }
+
+.card-credit {
+  font-size: .72rem;
+  color: var(--tg-muted);
+  margin: -6px 0 14px;
+  line-height: 1.4;
+}
+.card-credit-link { color: var(--tg-accent-soft); text-decoration: none; }
+.card-credit-link:hover { text-decoration: underline; }
 
 .card-title { font-size: 1.25rem; font-weight: 700; margin-right: 34px; }
 .card-meta { color: var(--tg-muted); font-size: .85rem; margin-top: 4px; }
