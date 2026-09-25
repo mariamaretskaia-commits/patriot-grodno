@@ -42,17 +42,17 @@
   {
     "id": "memorial-pogranichnikam-grodno",
     "title": "Мемориал воинам-пограничникам",
-    "status": "review",
+    "status": "verified",
     "current": [
-      53.674225,
-      23.786144
+      53.6726,
+      23.8026
     ],
     "found": true,
     "suggested": [
       53.674225,
       23.786144
     ],
-    "distance_m": 0,
+    "distance_m": 1099,
     "is_object": false,
     "verdict": "reference",
     "query": "улица Советских пограничников, Гродно, Беларусь",
@@ -82,7 +82,7 @@
   {
     "id": "fort-2-naumovichi",
     "title": "Форт №2 Гродненской крепости",
-    "status": "review",
+    "status": "catalog",
     "current": [
       53.717292,
       23.669414
@@ -142,17 +142,17 @@
   {
     "id": "memorial-smorgon",
     "title": "Мемориальный комплекс Первой мировой войны",
-    "status": "review",
+    "status": "catalog",
     "current": [
-      54.481782,
-      26.401282
+      54.4897,
+      26.4204
     ],
     "found": true,
     "suggested": [
       54.481782,
       26.401282
     ],
-    "distance_m": 0,
+    "distance_m": 1517,
     "is_object": false,
     "verdict": "reference",
     "query": "Сморгонь, Беларусь",
@@ -222,17 +222,17 @@
   {
     "id": "memorial-dyatlovo",
     "title": "Мемориал «Дети лихолетья» (Дятлово)",
-    "status": "review",
+    "status": "catalog",
     "current": [
-      53.4657,
-      25.405348
+      53.4669,
+      25.3891
     ],
     "found": true,
     "suggested": [
       53.4657,
       25.405348
     ],
-    "distance_m": 0,
+    "distance_m": 1084,
     "is_object": false,
     "verdict": "reference",
     "query": "Дятлово, Беларусь",
@@ -319,17 +319,17 @@
   {
     "id": "pamyatnik-artilleriya-volkovysk",
     "title": "Памятник артиллерийскому орудию (Волковыск)",
-    "status": "review",
+    "status": "catalog",
     "current": [
-      53.1534,
-      24.433
+      53.1545,
+      24.449
     ],
     "found": true,
     "suggested": [
       53.164729,
       24.458169
     ],
-    "distance_m": 2098,
+    "distance_m": 1291,
     "is_object": false,
     "verdict": "reference",
     "query": "Волковыск, Беларусь",
@@ -359,7 +359,7 @@
   {
     "id": "yuratishki-bratskaya",
     "title": "Братская могила (Юратишки)",
-    "status": "review",
+    "status": "catalog",
     "current": [
       54.032826,
       25.925785

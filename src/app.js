@@ -663,10 +663,13 @@
     places.forEach(function (place) {
       if (counts[place.coordStatus] !== undefined) counts[place.coordStatus] += 1;
     });
-    el.coordNote.innerHTML = "Координаты " + counts.verified + " из " + places.length +
+    var text = "Координаты " + counts.verified + " из " + places.length +
       " мест подтверждены по объектам OpenStreetMap, ещё " + counts.catalog +
-      " взяты из официальных каталогов райисполкомов, " + counts.review +
-      " требуют ручной сверки на местности. Подробности — в файле " +
+      " взяты из официальных каталогов и паспортов объектов";
+    if (counts.review > 0) {
+      text += ", " + counts.review + " требуют ручной сверки на местности";
+    }
+    el.coordNote.innerHTML = text + ". Подробности — в файле " +
       "<code>tools/coords_report.md</code>.";
   }
 
