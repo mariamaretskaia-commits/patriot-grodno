@@ -2,16 +2,13 @@
   "use strict";
 
   var STORAGE_KEY = "pg_state_v1";
-  var GEO_BONUS = 5;
-  var NEAR_RADIUS = 2000;
   var BOT_USERNAME = "MemoryOfTheGrodnoRegion_bot";
 
-  var POINTS = { visit: 10, quiz: 15, photo: 20, geo: GEO_BONUS };
+  var POINTS = { visit: 10, quiz: 15, photo: 20 };
   var FORT_TYPE = "фортификация";
 
   var state = {
     visited: {},
-    gps: {},
     photos: {},
     correct: {},
     badges: {}
@@ -47,7 +44,7 @@
       "finishRestart", "passportRank", "passportSub", "passportFill",
       "statVisited", "statQuiz", "statPhotos", "statBadges", "badges",
       "sources", "shareBtn", "resetProgress", "sheet", "sheetBackdrop",
-      "sheetClose", "sheetBody", "toast", "sheetPanel", "coordNote"
+      "sheetClose", "sheetBody", "toast", "sheetPanel"
     ].forEach(function (id) { el[id] = $(id); });
   }
 
@@ -238,7 +235,6 @@
     var total = visitedCount() * POINTS.visit;
     total += correctCount() * POINTS.quiz;
     total += photoCount() * POINTS.photo;
-    total += Object.keys(state.gps).filter(function (id) { return state.gps[id]; }).length * GEO_BONUS;
     return total;
   }
 
@@ -290,16 +286,6 @@
     return "Начинающий";
   }
 
-  function haversine(a, b) {
-    var toRad = Math.PI / 180;
-    var dLat = (b[0] - a[0]) * toRad;
-    var dLon = (b[1] - a[1]) * toRad;
-    var h = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(a[0] * toRad) * Math.cos(b[0] * toRad) *
-      Math.sin(dLon / 2) * Math.sin(dLon / 2);
-    return 2 * 6371000 * Math.asin(Math.sqrt(h));
-  }
-
   function photoSrc(place) {
     return photos[place.id] || "";
   }
@@ -310,9 +296,20 @@
 
   function photoBlock(place) {
     if (hasPhoto(place)) {
-      return '<img class="card-photo" src="' + photoSrc(place) + '" alt="' + escapeHtml(place.title) + '">';
+      return '<img class="card-photo" data-fit="1" src="' + photoSrc(place) +
+        '" alt="' + escapeHtml(place.title) + '">';
     }
     return '<div class="card-photo-fallback">Фото пока нет</div>';
+  }
+
+  function applyPhotoFit(img) {
+    if (!img || img.dataset.fitDone) return;
+    if (!img.naturalWidth) {
+      img.addEventListener("load", function () { applyPhotoFit(img); }, { once: true });
+      return;
+    }
+    img.dataset.fitDone = "1";
+    if (img.naturalHeight > img.naturalWidth) img.classList.add("is-portrait");
   }
 
   function creditBlock(place) {
@@ -327,12 +324,6 @@
       (credit.source_url ? ' · <a class="card-credit-link" data-url="' + escapeHtml(credit.source_url) + '" href="' + escapeHtml(credit.source_url) + '" target="_blank" rel="noopener noreferrer">источник</a>' : "") +
       (credit.license_url ? ' · <a class="card-credit-link" data-url="' + escapeHtml(credit.license_url) + '" href="' + escapeHtml(credit.license_url) + '" target="_blank" rel="noopener noreferrer">условия</a>' : "") +
       "</div>";
-  }
-
-  function coordTag(place) {
-    if (place.coordStatus === "verified") return '<span class="tag tag-ok">координаты подтверждены</span>';
-    if (place.coordStatus === "review") return '<span class="tag tag-review">уточняется на местности</span>';
-    return '<span class="tag">координаты по каталогу</span>';
   }
 
   function fillFilters() {
@@ -389,7 +380,7 @@
         '<span class="place-main">' +
         '<span class="place-name">' + escapeHtml(place.title) + "</span>" +
         '<span class="place-meta">' + escapeHtml(place.district) + " · " + escapeHtml(place.period) + "</span>" +
-        '<span class="place-tags">' + coordTag(place) + "</span>" +
+        '<span class="place-address">' + escapeHtml(place.address || place.district) + "</span>" +
         "</span>" +
         '<span class="place-check">✓</span>' +
         "</button></li>";
@@ -420,9 +411,12 @@
     map = L.map("map", { zoomControl: true, attributionControl: true })
       .setView([53.68, 23.83], 9);
 
+    // Убираем логотип Leaflet (флаг) из атрибуции; ссылка на OpenStreetMap обязательна
+    if (map.attributionControl) map.attributionControl.setPrefix(false);
+
     L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
       maxZoom: 19,
-      attribution: "© OpenStreetMap"
+      attribution: "&copy; <a href=\"https://www.openstreetmap.org/copyright\" target=\"_blank\" rel=\"noopener\">OpenStreetMap</a> contributors"
     }).on("tileerror", function () {
       tileFailures += 1;
       if (tileFailures > 2) el.mapNote.hidden = false;
@@ -475,15 +469,16 @@
 
   function renderSheet(place) {
     var isVisited = Boolean(state.visited[place.id]);
-    var hasGeo = Boolean(state.gps[place.id]);
     var tags = [
       '<span class="tag">' + escapeHtml(place.district) + "</span>",
       '<span class="tag">' + escapeHtml(place.type) + "</span>",
-      '<span class="tag">' + escapeHtml(place.period) + "</span>",
-      coordTag(place)
+      '<span class="tag">' + escapeHtml(place.period) + "</span>"
     ].join("");
 
-    var ownPhoto = state.photos[place.id] ? '<div class="photo-strip"><img id="ownPhoto" alt="Ваше фото"></div>' : "";
+    var hasOwnPhoto = Boolean(state.photos[place.id]);
+    var ownPhoto = hasOwnPhoto ? '<div class="photo-strip"><img id="ownPhoto" alt="Ваше фото"></div>' : "";
+    var deletePhotoBtn = hasOwnPhoto ?
+      '<button class="btn btn-danger" id="deletePhotoBtn" type="button">Удалить фото</button>' : "";
 
     el.sheetBody.innerHTML =
       photoBlock(place) +
@@ -492,36 +487,37 @@
       '<div class="card-meta">' + escapeHtml(place.short) + "</div>" +
       '<div class="card-tags">' + tags + "</div>" +
       '<p class="card-full">' + escapeHtml(place.full) + "</p>" +
-      '<div class="card-source">Источник: ' + escapeHtml(place.source || "—") +
-      "<br>Координаты: " + place.coords[0] + ", " + place.coords[1] + "</div>" +
+      '<div class="card-address">' + escapeHtml(place.address || place.district) + "</div>" +
       ownPhoto +
       '<div class="card-actions">' +
       '<button class="btn ' + (isVisited ? "btn-ghost" : "btn-primary") + '" id="visitBtn" type="button">' +
       (isVisited ? "✓ Вы здесь были" : "Я здесь — " + POINTS.visit + " очков") + "</button>" +
       '<div class="card-actions-row">' +
-      '<button class="btn btn-ghost" id="geoBtn" type="button">' +
-      (hasGeo ? "✓ Геолокация" : "Проверить GPS") + "</button>" +
       '<button class="btn btn-ghost" id="photoBtn" type="button">' +
-      (state.photos[place.id] ? "Заменить фото" : "Своё фото +" + POINTS.photo) + "</button>" +
+      (hasOwnPhoto ? "Заменить фото" : "Своё фото +" + POINTS.photo) + "</button>" +
+      '<button class="btn btn-ghost" id="sharePlaceBtn" type="button">Поделиться</button>' +
       "</div>" +
-      '<button class="btn btn-ghost" id="sharePlaceBtn" type="button">Поделиться местом</button>' +
+      deletePhotoBtn +
       "</div>";
 
     var visitBtn = $("visitBtn");
     if (visitBtn) visitBtn.addEventListener("click", function () { markVisited(place.id); });
-    var geoBtn = $("geoBtn");
-    if (geoBtn) geoBtn.addEventListener("click", function () { checkGeo(place.id); });
     var photoBtn = $("photoBtn");
     if (photoBtn) photoBtn.addEventListener("click", function () { openPhotoPicker(place.id); });
     var sharePlaceBtn = $("sharePlaceBtn");
     if (sharePlaceBtn) sharePlaceBtn.addEventListener("click", function () { sharePlace(place.id); });
+    var deletePhotoBtn = $("deletePhotoBtn");
+    if (deletePhotoBtn) deletePhotoBtn.addEventListener("click", function () { deletePhoto(place.id); });
 
     var own = $("ownPhoto");
     if (own) {
       loadPhoto(place.id).then(function (blob) {
-        if (blob) own.src = URL.createObjectURL(blob);
+        if (!blob) return;
+        own.src = URL.createObjectURL(blob);
+        applyPhotoFit(own);
       });
     }
+    applyPhotoFit(el.sheetBody.querySelector(".card-photo[data-fit]"));
   }
 
   function markVisited(id) {
@@ -538,37 +534,6 @@
     refreshMarker(id);
     renderSheet(placeById(id));
     checkBadges();
-  }
-
-  function checkGeo(id) {
-    var place = placeById(id);
-    if (!place) return;
-    if (!navigator.geolocation) {
-      toast("Геолокация недоступна в этом браузере");
-      return;
-    }
-    if (state.gps[id]) {
-      toast("Геолокация для этого места уже засчитана");
-      return;
-    }
-    toast("Определяю местоположение…");
-    navigator.geolocation.getCurrentPosition(function (position) {
-      var distance = haversine(place.coords, [position.coords.latitude, position.coords.longitude]);
-      if (distance <= NEAR_RADIUS) {
-        state.gps[id] = true;
-        saveState();
-        haptic("success");
-        toast("Вы на месте — " + Math.round(distance) + " м, +" + GEO_BONUS + " очков", true);
-        updateStats();
-        renderSheet(place);
-        checkBadges();
-      } else {
-        haptic("warning");
-        toast("До места " + (distance / 1000).toFixed(1) + " км");
-      }
-    }, function () {
-      toast("Не удалось определить местоположение");
-    }, { enableHighAccuracy: true, timeout: 9000, maximumAge: 60000 });
   }
 
   function openPhotoPicker(id) {
@@ -601,6 +566,22 @@
       checkBadges();
     }).catch(function () {
       toast("Не удалось обработать фото");
+    });
+  }
+
+  function deletePhoto(id) {
+    if (!window.confirm("Удалить своё фото? " + POINTS.photo + " очков будет снято.")) return;
+    deletePhotoBlob(id).then(function () {
+      delete state.photos[id];
+      saveState();
+      haptic("warning");
+      toast("Фото удалено, −" + POINTS.photo + " очков");
+      updateStats();
+      renderList();
+      renderSheet(placeById(id));
+      checkBadges();
+    }).catch(function () {
+      toast("Не удалось удалить фото");
     });
   }
 
@@ -648,6 +629,17 @@
       return new Promise(function (resolve, reject) {
         var tx = db.transaction("photos", "readwrite");
         tx.objectStore("photos").put(blob, id);
+        tx.oncomplete = resolve;
+        tx.onerror = function () { reject(tx.error); };
+      });
+    });
+  }
+
+  function deletePhotoBlob(id) {
+    return openDb().then(function (db) {
+      return new Promise(function (resolve, reject) {
+        var tx = db.transaction("photos", "readwrite");
+        tx.objectStore("photos").delete(id);
         tx.oncomplete = resolve;
         tx.onerror = function () { reject(tx.error); };
       });
@@ -790,21 +782,6 @@
       "(CC0, CC BY-SA). Снимки уменьшены, авторы и условия указаны в карточках мест.</li>";
   }
 
-  function renderCoordNote() {
-    var counts = { verified: 0, catalog: 0, review: 0 };
-    places.forEach(function (place) {
-      if (counts[place.coordStatus] !== undefined) counts[place.coordStatus] += 1;
-    });
-    var text = "Координаты " + counts.verified + " из " + places.length +
-      " мест подтверждены по объектам OpenStreetMap, ещё " + counts.catalog +
-      " взяты из официальных каталогов и паспортов объектов";
-    if (counts.review > 0) {
-      text += ", " + counts.review + " требуют ручной сверки на местности";
-    }
-    el.coordNote.innerHTML = text + ". Подробности — в файле " +
-      "<code>tools/coords_report.md</code>.";
-  }
-
   function updateStats() {
     var total = points();
     var visited = visitedCount();
@@ -860,7 +837,6 @@
   function resetProgress() {
     if (!window.confirm("Сбросить весь прогресс, очки и значки? Фото останутся на устройстве.")) return;
     state.visited = {};
-    state.gps = {};
     state.photos = {};
     state.correct = {};
     state.badges = {};
@@ -956,7 +932,6 @@
       fillFilters();
       renderList();
       renderSources();
-      renderCoordNote();
       updateStats();
       initMap();
       startQuiz();
