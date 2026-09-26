@@ -134,10 +134,49 @@ OpenStreetMap «Помнік савецкім памежнікам» в 14 м, �
 
 ## Telegram Mini App
 
-1. `@BotFather` → `/newbot` → сохраните токен (в репозиторий его не кладите).
-2. `/setmenubutton` → URL страницы на GitHub Pages.
-3. Приложение читает `Telegram.WebApp.themeParams` и перекрашивает интерфейс
-   в цвета темы, использует `HapticFeedback` при получении очков и значков.
+Приложение работает как **Main Mini App**: кнопка «Запустить» появляется в профиле
+бота, а приложение открывается на весь экран.
+
+### Настройка в `@BotFather`
+
+1. `/newbot` → задайте имя и `@username` бота. Токен в репозиторий не кладите:
+   приложению он не нужен, все данные хранятся на устройстве.
+2. Bot Settings → **Main Mini App** → укажите адрес страницы:
+   `https://mariamaretskaia-commits.github.io/patriot-grodno/`
+3. Режим запуска — **Fullscreen**.
+4. Готово: кнопка «Запустить» в профиле бота и прямая ссылка
+   `https://t.me/<botusername>?startapp`.
+5. Опционально: Bot Settings → **Configure Mini App** — иконка и цвета
+   загрузочного экрана.
+
+Адрес должен быть HTTPS — GitHub Pages уже отдаёт его по HTTPS.
+
+### Ссылки на конкретное место
+
+`https://t.me/<botusername>?startapp=<id>` открывает сразу карточку места.
+Кнопка «Поделиться местом» в карточке формирует такую ссылку сама.
+
+Чтобы ссылки работали, впишите `@username` бота в `src/app.js`:
+
+```js
+var BOT_USERNAME = "your_bot_username";
+```
+
+Идентификаторы мест — в `data/places.json` (например, `shtalag-324-grodno`).
+Пока `BOT_USERNAME` пустой, кнопка делится обычной ссылкой на страницу.
+
+### Что используется из Telegram API
+
+- `themeParams` — цвета темы, `themeChanged` перекрашивает интерфейс сразу
+- `setHeaderColor` / `setBackgroundColor` — нативная шапка в цвете темы
+- `BackButton` — возврат из карточки места
+- `contentSafeAreaInset` + `viewportChanged` — отступы под «чёлку»
+- `addToHomeScreen` — ярлык на домашний экран iOS
+- `HapticFeedback` — вибрация при очках и значках
+- `shareMessage`, `openLink` — «Поделиться» и внешние ссылки
+
+Все вызовы проверяют версию WebApp, поэтому приложение не сыплет ошибками
+в старых клиентах.
 
 ## Источники данных
 

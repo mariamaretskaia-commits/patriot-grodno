@@ -4,6 +4,7 @@
   var STORAGE_KEY = "pg_state_v1";
   var GEO_BONUS = 5;
   var NEAR_RADIUS = 2000;
+  var BOT_USERNAME = "";
 
   var POINTS = { visit: 10, quiz: 15, photo: 20, geo: GEO_BONUS };
   var FORT_TYPE = "фортификация";
@@ -29,6 +30,7 @@
   var quizRoundCorrect = 0;
   var tileFailures = 0;
   var photoInput = null;
+  var homeScreenOffered = false;
 
   var el = {};
 
@@ -89,6 +91,64 @@
     } catch (err) {}
   }
 
+  function supportsVersion(api, version) {
+    if (!api) return false;
+    if (typeof api.isVersionAtLeast === "function") {
+      try {
+        return api.isVersionAtLeast(version);
+      } catch (err) {
+        return false;
+      }
+    }
+    var current = parseFloat(api.version);
+    return !isNaN(current) && current >= parseFloat(version);
+  }
+
+  function setBackButton(visible) {
+    var api = tg();
+    if (!api || !api.BackButton || !supportsVersion(api, "6.1")) return;
+    try {
+      if (visible) api.BackButton.show();
+      else api.BackButton.hide();
+    } catch (err) {}
+  }
+
+  function offerHomeScreen() {
+    var api = tg();
+    if (!api || homeScreenOffered) return;
+    homeScreenOffered = true;
+    if (typeof api.addToHomeScreen !== "function" || !supportsVersion(api, "6.1")) return;
+    try {
+      api.addToHomeScreen();
+    } catch (err) {}
+  }
+
+  function updateNativeChrome() {
+    var api = tg();
+    if (!api || !supportsVersion(api, "6.1")) return;
+    try {
+      var params = api.themeParams || {};
+      var header = params.header_bg_color || params.secondary_bg_color || params.bg_color;
+      var background = params.bg_color || params.secondary_bg_color;
+      if (header && typeof api.setHeaderColor === "function") api.setHeaderColor(header);
+      if (background && typeof api.setBackgroundColor === "function") api.setBackgroundColor(background);
+    } catch (err) {}
+  }
+
+  function updateSafeArea() {
+    var api = tg();
+    if (!api) return;
+    try {
+      var insets = api.contentSafeAreaInset || api.viewportSafeAreaInset;
+      if (!insets) return;
+      var root = document.documentElement.style;
+      if (typeof insets.top === "number") root.setProperty("--tg-safe-top", insets.top + "px");
+      if (typeof insets.bottom === "number") root.setProperty("--tg-safe-bottom", insets.bottom + "px");
+      if (typeof insets.left === "number") root.setProperty("--tg-safe-left", insets.left + "px");
+      if (typeof insets.right === "number") root.setProperty("--tg-safe-right", insets.right + "px");
+    } catch (err) {}
+  }
+
   function applyTelegramTheme() {
     var api = tg();
     if (!api) return;
@@ -102,10 +162,44 @@
       if (params.text_color) root.setProperty("--tg-text", params.text_color);
       if (params.hint_color) root.setProperty("--tg-muted", params.hint_color);
       if (params.button_color) root.setProperty("--tg-accent", params.button_color);
+      if (params.link_color) root.setProperty("--tg-link", params.link_color);
+      updateNativeChrome();
+      updateSafeArea();
+    } catch (err) {}
+  }
+
+  function initTelegram() {
+    var api = tg();
+    if (!api) return;
+    applyTelegramTheme();
+    try {
       if (api.initData && window.history && history.replaceState) {
         history.replaceState(null, "", location.pathname + location.search + location.hash);
       }
+      if (typeof api.onEvent === "function" && supportsVersion(api, "6.1")) {
+        api.onEvent("themeChanged", applyTelegramTheme);
+        api.onEvent("viewportChanged", updateSafeArea);
+      }
+      if (api.BackButton && typeof api.BackButton.onClick === "function" && supportsVersion(api, "6.1")) {
+        api.BackButton.onClick(closeSheet);
+      }
+      setBackButton(false);
     } catch (err) {}
+  }
+
+  function miniAppLink(placeId) {
+    if (!BOT_USERNAME) return null;
+    var base = "https://t.me/" + BOT_USERNAME;
+    if (!placeId) return base + "?startapp";
+    return base + "?startapp=" + encodeURIComponent(placeId);
+  }
+
+  function applyStartParam() {
+    var api = tg();
+    if (!api || !api.initData) return;
+    var param = api.initDataUnsafe && api.initDataUnsafe.start_param;
+    if (!param) return;
+    if (placeById(param)) openPlace(param);
   }
 
   function toast(message, award) {
@@ -365,13 +459,17 @@
     el.sheet.hidden = false;
     document.body.style.overflow = "hidden";
     el.sheetPanel.scrollTop = 0;
+    setBackButton(true);
+    offerHomeScreen();
     Object.keys(markers).forEach(refreshMarker);
   }
 
   function closeSheet() {
+    if (el.sheet.hidden) return;
     el.sheet.hidden = true;
     document.body.style.overflow = "";
     activeId = null;
+    setBackButton(false);
     Object.keys(markers).forEach(refreshMarker);
   }
 
@@ -405,7 +503,9 @@
       (hasGeo ? "✓ Геолокация" : "Проверить GPS") + "</button>" +
       '<button class="btn btn-ghost" id="photoBtn" type="button">' +
       (state.photos[place.id] ? "Заменить фото" : "Своё фото +" + POINTS.photo) + "</button>" +
-      "</div></div>";
+      "</div>" +
+      '<button class="btn btn-ghost" id="sharePlaceBtn" type="button">Поделиться местом</button>' +
+      "</div>";
 
     var visitBtn = $("visitBtn");
     if (visitBtn) visitBtn.addEventListener("click", function () { markVisited(place.id); });
@@ -413,6 +513,8 @@
     if (geoBtn) geoBtn.addEventListener("click", function () { checkGeo(place.id); });
     var photoBtn = $("photoBtn");
     if (photoBtn) photoBtn.addEventListener("click", function () { openPhotoPicker(place.id); });
+    var sharePlaceBtn = $("sharePlaceBtn");
+    if (sharePlaceBtn) sharePlaceBtn.addEventListener("click", function () { sharePlace(place.id); });
 
     var own = $("ownPhoto");
     if (own) {
@@ -578,6 +680,7 @@
     quizRoundCorrect = 0;
     el.quizFinish.hidden = true;
     el.quizCard.hidden = false;
+    setBackButton(false);
     renderQuestion();
   }
 
@@ -646,6 +749,7 @@
     el.quizFill.style.width = "100%";
     el.quizCard.hidden = true;
     el.quizFinish.hidden = false;
+    setBackButton(false);
     el.finishScore.textContent = quizRoundCorrect + " / " + quizOrder.length;
     el.finishText.textContent = percent + "% правильных ответов в этом заходе. Всего верных ответов: " +
       correctCount() + " из " + questions.length + ". Очки начисляются за каждый вопрос только один раз.";
@@ -718,12 +822,29 @@
     renderBadges();
   }
 
+  function sharePlace(id) {
+    var place = placeById(id);
+    if (!place) return;
+    var link = miniAppLink(id) || location.href.split("#")[0];
+    var text = place.title + " — " + place.district + ", " + place.period;
+    var api = tg();
+    if (api && api.initData && typeof api.shareMessage === "function") {
+      try {
+        api.shareMessage(text, link);
+        return;
+      } catch (err) {}
+    }
+    var share = "https://t.me/share/url?url=" + encodeURIComponent(link) +
+      "&text=" + encodeURIComponent(text);
+    window.open(share, "_blank", "noopener");
+  }
+
   function shareResult() {
     var total = points();
     var text = "Я набрал(а) " + total + " очков в «Памяти Гродненщины»: посещено " +
       visitedCount() + " из " + places.length + " мест, верных ответов в викторине — " +
       correctCount() + " из " + questions.length + ".";
-    var url = location.href.split("#")[0];
+    var url = miniAppLink("") || location.href.split("#")[0];
     var api = tg();
     if (api && api.initData && typeof api.shareMessage === "function") {
       try {
@@ -830,7 +951,7 @@
   function init() {
     cacheElements();
     loadState();
-    applyTelegramTheme();
+    initTelegram();
     readData().then(function () {
       fillFilters();
       renderList();
@@ -840,6 +961,7 @@
       initMap();
       startQuiz();
       bindEvents();
+      applyStartParam();
       checkBadges();
     }).catch(function () {
       el.placeList.innerHTML = '<li class="place-card" style="display:block;cursor:default">' +
