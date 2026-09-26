@@ -137,33 +137,31 @@ OpenStreetMap «Помнік савецкім памежнікам» в 14 м, �
 Приложение работает как **Main Mini App**: кнопка «Запустить» появляется в профиле
 бота, а приложение открывается на весь экран.
 
+Бот: [@MemoryOfTheGrodnoRegion_bot](https://t.me/MemoryOfTheGrodnoRegion_bot)
+
 ### Настройка в `@BotFather`
 
-1. `/newbot` → задайте имя и `@username` бота. Токен в репозиторий не кладите:
-   приложению он не нужен, все данные хранятся на устройстве.
+1. Бот уже создан, `@username` прописан в `src/app.js` (`BOT_USERNAME`).
+   Токен в репозиторий не кладите: приложению он не нужен, все данные хранятся
+   на устройстве.
 2. Bot Settings → **Main Mini App** → укажите адрес страницы:
    `https://mariamaretskaia-commits.github.io/patriot-grodno/`
 3. Режим запуска — **Fullscreen**.
 4. Готово: кнопка «Запустить» в профиле бота и прямая ссылка
-   `https://t.me/<botusername>?startapp`.
+   <https://t.me/MemoryOfTheGrodnoRegion_bot?startapp>.
 5. Опционально: Bot Settings → **Configure Mini App** — иконка и цвета
    загрузочного экрана.
 
 Адрес должен быть HTTPS — GitHub Pages уже отдаёт его по HTTPS.
+Шаги 2–5 Bot API не поддерживает, их выполняют только вручную.
 
 ### Ссылки на конкретное место
 
-`https://t.me/<botusername>?startapp=<id>` открывает сразу карточку места.
-Кнопка «Поделиться местом» в карточке формирует такую ссылку сама.
-
-Чтобы ссылки работали, впишите `@username` бота в `src/app.js`:
-
-```js
-var BOT_USERNAME = "your_bot_username";
-```
+`https://t.me/MemoryOfTheGrodnoRegion_bot?startapp=<id>` открывает сразу карточку
+места. Кнопка «Поделиться местом» в карточке формирует такую ссылку сама.
 
 Идентификаторы мест — в `data/places.json` (например, `shtalag-324-grodno`).
-Пока `BOT_USERNAME` пустой, кнопка делится обычной ссылкой на страницу.
+При смене бота достаточно поменять `BOT_USERNAME` в `src/app.js` и пересобрать.
 
 ### Что используется из Telegram API
 

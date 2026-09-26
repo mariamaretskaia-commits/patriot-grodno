@@ -4,7 +4,7 @@
   var STORAGE_KEY = "pg_state_v1";
   var GEO_BONUS = 5;
   var NEAR_RADIUS = 2000;
-  var BOT_USERNAME = "";
+  var BOT_USERNAME = "MemoryOfTheGrodnoRegion_bot";
 
   var POINTS = { visit: 10, quiz: 15, photo: 20, geo: GEO_BONUS };
   var FORT_TYPE = "фортификация";
