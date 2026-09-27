@@ -297,11 +297,12 @@ async function main() {
   console.log("\n7. галерея");
   {
     const mp = multipart("photo", "b.png", "image/png", jpegBytes);
-    await call(env, "https://api.example.com/api/photos?placeId=memorial-lida", {
+    const other = await call(env, "https://api.example.com/api/photos?placeId=memorial-lida", {
       method: "POST",
       headers: { ...auth2, "Content-Type": mp.contentType },
       body: mp.body,
     });
+    const otherEntryId = (await other.json()).entry.id;
 
     const all = await call(env, "https://api.example.com/api/gallery", { headers: auth1 });
     const body = await all.json();
@@ -312,7 +313,7 @@ async function main() {
     const byPlace = await call(env, "https://api.example.com/api/gallery?placeId=memorial-lida", { headers: auth1 });
     const bp = await byPlace.json();
     check("фильтр по месту", bp.entries.length, 1);
-    check("в фильтре чужое фото", bp.entries[0].id, "memorial-lida_77");
+    check("в фильтре чужое фото", bp.entries[0].id, otherEntryId);
 
     // Автор не показывается в приложении, поэтому наружу он не отдаётся.
     const serialized = JSON.stringify(body);
@@ -323,6 +324,16 @@ async function main() {
     check("в галерее нет имени автора", serialized.indexOf("Иван Петров"), -1);
     check("в галерее есть id записи", Boolean(bp.entries[0].id), true);
     check("в галерее есть contentType", Boolean(bp.entries[0].contentType), true);
+
+    // Идентификатор записи не должен выдавать автора: прежний формат
+    // "<место>_<telegramId>" позволял перебрать чужие числовые id.
+    // Проверяем форму, а не вхождение подстроки: в 24-символьном
+    // случайном id короткое число вроде "42" появляется само по себе
+    // примерно в 2% запусков, и такая проверка была бы нестабильной.
+    check("id не в старом формате место_число", body.entries.every((e) => !/_\d+$/.test(e.id)), true);
+    check("id не выводится из placeId", body.entries.every((e) => !e.id.startsWith("memorial-lida_")), true);
+    check("id выглядит непрозрачно", body.entries.every((e) => /^[a-z0-9]{24}$/.test(e.id)), true);
+    check("два id разных юзеров не совпали", firstEntryId !== otherEntryId, true);
 
     const noAuth = await call(env, "https://api.example.com/api/gallery");
     check("галерея без auth 401", noAuth.status, 401);
@@ -735,6 +746,77 @@ async function main() {
     });
     const gone = await call(env, "https://api/photos/" + entry.id, { headers: auth1 });
     check("после удаления 404", gone.status, 404);
+  }
+
+  console.log("\n22. модератор");
+  {
+    // Список модераторов приходит секретом. Здесь его выдаём явно,
+    // чтобы проверить обе стороны: обычный пользователь и модератор.
+    env.MODERATOR_IDS = " 900 , 901 ";
+    const author = { "X-Telegram-Init-Data": signInitData(user(42)) };
+    const neighbour = { "X-Telegram-Init-Data": signInitData(user(43)) };
+    const mod = { "X-Telegram-Init-Data": signInitData(user(900)) };
+    const stranger = { "X-Telegram-Init-Data": signInitData(user(777)) };
+
+    const upload = async (place, who) => {
+      const mp = multipart("photo", "m.jpg", "image/jpeg", jpegBytes);
+      const res = await call(env, `https://api.example.com/api/photos?placeId=${place}`, {
+        method: "POST",
+        headers: { ...who, "Content-Type": mp.contentType },
+        body: mp.body,
+      });
+      return (await res.json()).entry;
+    };
+
+    const mine = await upload("fort-2-naumovichi", author);
+    const theirs = await upload("memorial-lida", neighbour);
+
+    // Обычный пользователь: авторство скрыто, удалять можно только своё.
+    const plain = await (await call(env, "https://api.example.com/api/gallery", { headers: author })).json();
+    check("обычному isModerator=false", plain.isModerator, false);
+    check("обычному своё удалять можно", plain.canDelete.includes(mine.id), true);
+    check("обычному чужое удалять нельзя", plain.canDelete.includes(theirs.id), false);
+    const plainRaw = JSON.stringify(plain);
+    check("обычному нет userId в галерее", plainRaw.indexOf('"userId"'), -1);
+    check("обычному нет имени автора", plainRaw.indexOf("Иван Петров"), -1);
+
+    const forbidden = await call(env, "https://api.example.com/api/photos/" + theirs.id, {
+      method: "DELETE",
+      headers: stranger,
+    });
+    check("постороннему удалить 403", forbidden.status, 403);
+
+    // Модератор: автор виден, удалить можно любое фото.
+    const modView = await (await call(env, "https://api.example.com/api/gallery", { headers: mod })).json();
+    const modMine = modView.entries.find((e) => e.id === mine.id);
+    check("модератору isModerator=true", modView.isModerator, true);
+    check("модератору видно имя автора", modMine.author, "Иван Петров");
+    check("модератору виден userId", modMine.userId, 42);
+    check("модератору виден username", modMine.username, "ivan42");
+    check("модератору можно удалить и своё, и чужое", modView.canDelete.includes(mine.id) && modView.canDelete.includes(theirs.id), true);
+    check("модератору objectKey не отдаётся", JSON.stringify(modView).indexOf("objectKey"), -1);
+
+    const del = await call(env, "https://api.example.com/api/photos/" + mine.id, {
+      method: "DELETE",
+      headers: mod,
+    });
+    check("модератор удалил чужое", del.status, 200);
+    check("в ответе отмечено удаление модератором", (await del.json()).moderated, true);
+
+    const after = await call(env, "https://api.example.com/api/photos/" + mine.id, { headers: mod });
+    check("после удаления модератором 404", after.status, 404);
+
+    // Пустой или сглушённый секрет никому прав не даёт, а отзыв модератора
+    // действует сразу после смены секрета.
+    env.MODERATOR_IDS = "";
+    const none = await (await call(env, "https://api.example.com/api/gallery", { headers: mod })).json();
+    check("без секрета никто не модератор", none.isModerator, false);
+    env.MODERATOR_IDS = "  , , ";
+    const junk = await (await call(env, "https://api.example.com/api/gallery", { headers: stranger })).json();
+    check("мусорный секрет не даёт прав", junk.isModerator, false);
+    env.MODERATOR_IDS = "9001";
+    const changed = await (await call(env, "https://api.example.com/api/gallery", { headers: mod })).json();
+    check("смена секрета действует сразу", changed.isModerator, false);
   }
 
   console.log("\n" + "-".repeat(46));

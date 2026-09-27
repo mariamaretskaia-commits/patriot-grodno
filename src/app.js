@@ -344,11 +344,14 @@
     if (credit.author) parts.push("Автор: " + credit.author);
     if (credit.license) parts.push("Лицензия: " + credit.license);
     if (credit.date) parts.push("Дата: " + String(credit.date).slice(0, 10));
-    return '<div class="card-credit">Фото: Wikimedia Commons, ' + escapeHtml(parts.join(" · ")) +
-      ' · снимок уменьшен' +
-      (credit.source_url ? ' · <a class="card-credit-link" data-url="' + escapeHtml(credit.source_url) + '" href="' + escapeHtml(credit.source_url) + '" target="_blank" rel="noopener noreferrer">источник</a>' : "") +
-      (credit.license_url ? ' · <a class="card-credit-link" data-url="' + escapeHtml(credit.license_url) + '" href="' + escapeHtml(credit.license_url) + '" target="_blank" rel="noopener noreferrer">условия</a>' : "") +
-      "</div>";
+    // Источник берём из данных: не все снимки из Wikimedia Commons,
+    // часть взята с сайтов райисполкомов, и подпись должна быть верной.
+    var source = credit.source_name || "Wikimedia Commons";
+    // Ссылки на источник и условия намеренно не делаем кликабельными:
+    // в приложении не должно быть ни одной ссылки, а требование
+    // атрибуции выполняется именем автора и названием лицензии.
+    return '<div class="card-credit">Фото: ' + escapeHtml(source) + ", " + escapeHtml(parts.join(" · ")) +
+      " · снимок уменьшен</div>";
   }
 
   function fillFilters() {
@@ -588,7 +591,7 @@
     box.hidden = false;
     var cached = galleryCache[placeId];
     if (cached) {
-      renderGallery(placeId, cached.shown, cached.total, cached.mine);
+      renderGallery(placeId, cached.shown, cached.total, cached.mine, cached.moderator);
       loadGalleryImages(placeId, cached.shown);
       return;
     }
@@ -608,11 +611,14 @@
       var all = (data.entries || []).slice();
       var mine = (data.canDelete || []).slice();
       var total = data.total || all.length;
+      // У модератора canDelete содержит все записи, поэтому его сетку
+      // нельзя фильтровать по «свои» — иначе она окажется пустой.
+      var moderator = Boolean(data.isModerator);
       var shown = all.slice(0, GALLERY_PAGE);
       galleryCache[placeId] = {
-        all: all, shown: shown, mine: mine, total: total,
+        all: all, shown: shown, mine: mine, total: total, moderator: moderator,
       };
-      renderGallery(placeId, shown, total, mine);
+      renderGallery(placeId, shown, total, mine, moderator);
       loadGalleryImages(placeId, shown);
     });
   }
@@ -623,8 +629,7 @@
     if (!cached) return;
     var before = cached.shown.length;
     cached.shown = cached.all.slice(0, before + GALLERY_PAGE);
-    renderGallery(placeId, cached.shown, cached.total, cached.mine);
-    // Новые слоты появились в свежей разметке, грузим только их.
+    renderGallery(placeId, cached.shown, cached.total, cached.mine, cached.moderator);
     loadGalleryImages(placeId, cached.shown.slice(before));
   }
 
@@ -634,19 +639,23 @@
     delete galleryCache[placeId];
   }
 
-  function renderGallery(placeId, entries, total, mine) {
+  function renderGallery(placeId, entries, total, mine, moderator) {
     var grid = $("galleryGrid");
     var count = $("galleryCount");
     var more = $("galleryMore");
     if (!grid) return;
 
     // Своё фото живёт выше по карточке, в общей сетке оно лишнее.
-    var visible = entries.filter(function (entry) {
-      return mine.indexOf(entry.id) < 0;
-    });
+    // Модератору показываем всё, включая его собственное: canDelete у
+    // него содержит все записи, и фильтр «убрать свои» обнулил бы сетку.
+    var visible = moderator
+      ? entries.slice()
+      : entries.filter(function (entry) {
+        return mine.indexOf(entry.id) < 0;
+      });
     // total считает все снимки места, включая собственный, поэтому
     // чужих фото чуть меньше — иначе счётчик врёт на единицу.
-    var othersTotal = Math.max(total - mine.length, 0);
+    var othersTotal = moderator ? total : Math.max(total - mine.length, 0);
     var hidden = othersTotal - visible.length;
 
     if (count) {
@@ -664,11 +673,29 @@
         : '<p class="gallery-empty">Будьте первым, кто добавит фото этого места.</p>';
     } else {
       grid.innerHTML = visible.map(function (entry) {
-        return '<button class="gallery-item" type="button" data-entry="' + escapeHtml(entry.id) +
-          '" data-caption="' + escapeHtml(entry.caption || "") + '">' +
+        // Имя автора кладём в разметку только для модератора. Сервер
+        // поле и не отдаёт обычному участнику, но лишний раз показать
+        // его в DOM значит показать при любой опечатке на сервере.
+        var authorAttr = moderator
+          ? ' data-author="' + escapeHtml(entry.author || "") + '"'
+          : "";
+        var photo = '<button class="gallery-item" type="button" data-entry="' + escapeHtml(entry.id) +
+          '" data-caption="' + escapeHtml(entry.caption || "") + '"' + authorAttr + ">" +
           '<span class="gallery-photo" data-entry="' + escapeHtml(entry.id) + '"></span>' +
           (entry.caption ? '<span class="gallery-caption">' + escapeHtml(entry.caption) + "</span>" : "") +
           "</button>";
+        // Подпись с автором и кнопкой удаления нужна только модератору,
+        // поэтому обычные участники её не видят и лишних узлов не получают.
+        if (!moderator) return '<div class="gallery-cell">' + photo + "</div>";
+        var who = entry.author || entry.username || ("id " + entry.userId);
+        var tags = [entry.author, entry.username, entry.userId].filter(Boolean).join(" · ");
+        return '<div class="gallery-cell">' + photo +
+          '<div class="gallery-mod">' +
+          '<span class="gallery-author" title="' + escapeHtml(tags) + '">' + escapeHtml(who) + "</span>" +
+          '<button class="gallery-del" type="button" data-entry="' + escapeHtml(entry.id) +
+          '" data-place="' + escapeHtml(placeId) +
+          '" data-label="' + escapeHtml(who) + '">Удалить</button>' +
+          "</div></div>";
       }).join("");
     }
     // Кнопка нужна, только если в уже загруженном списке есть ещё кадры.
@@ -723,14 +750,18 @@
     sheetUrls = [];
   }
 
-  function openLightbox(entryId, caption) {
+  function openLightbox(entryId, caption, author) {
     if (!el.lightbox) return;
     el.lightboxBody.innerHTML = "";
     if (lightboxUrl) {
       try { URL.revokeObjectURL(lightboxUrl); } catch (err) {}
       lightboxUrl = "";
     }
-    el.lightboxCaption.textContent = caption || "";
+    // Модератору подпись нужна вместе с автором: по фото он решает,
+    // оставлять ли его в общей галерее.
+    el.lightboxCaption.textContent = author
+      ? (caption ? caption + " · " : "") + author
+      : (caption || "");
     el.lightbox.hidden = false;
     window.Cloud.fetchPhoto(entryId).then(function (blob) {
       // Просмотрщик могли закрыть, пока шла загрузка.
@@ -882,6 +913,28 @@
     chain.then(function () {
       state.pendingDeletes = rest;
       saveState();
+    });
+  }
+
+  // Модератор удаляет чужое фото: локальное состояние участника не
+  // трогаем, очки не начислялись, поэтому и не снимаем.
+  function moderateDelete(entryId, placeId, label) {
+    if (!entryId) return;
+    var who = label ? " (" + label + ")" : "";
+    if (!window.confirm("Удалить фото участника" + who + "?")) return;
+    if (!window.Cloud || !window.Cloud.deletePhoto) {
+      toast("Удаление доступно только в Telegram");
+      return;
+    }
+    window.Cloud.deletePhoto(entryId).then(function (ok) {
+      if (!ok) {
+        toast("Не удалось удалить фото");
+        return;
+      }
+      haptic("warning");
+      toast("Фото удалено");
+      invalidateGallery(placeId);
+      renderSheet(placeById(placeId));
     });
   }
 
@@ -1057,19 +1110,6 @@
     }).join("");
   }
 
-  function openExternalLink(url) {
-    var api = tg();
-    if (api) {
-      try {
-        if (typeof api.openLink === "function") {
-          api.openLink(url, { try_instant_view: false });
-          return;
-        }
-      } catch (err) {}
-    }
-    window.open(url, "_blank", "noopener");
-  }
-
   function renderSources() {
     var seen = {};
     places.forEach(function (place) {
@@ -1099,6 +1139,8 @@
     renderBadges();
   }
 
+  // Шаринг живёт только через Telegram: запасная ветка с t.me/share
+  // открывала ссылку в браузере, а ссылок в приложении быть не должно.
   function sharePlace(id) {
     var place = placeById(id);
     if (!place) return;
@@ -1111,9 +1153,7 @@
         return;
       } catch (err) {}
     }
-    var share = "https://t.me/share/url?url=" + encodeURIComponent(link) +
-      "&text=" + encodeURIComponent(text);
-    window.open(share, "_blank", "noopener");
+    toast("Поделиться можно только из Telegram");
   }
 
   function shareResult() {
@@ -1129,9 +1169,7 @@
         return;
       } catch (err) {}
     }
-    var share = "https://t.me/share/url?url=" + encodeURIComponent(url) +
-      "&text=" + encodeURIComponent(text);
-    window.open(share, "_blank", "noopener");
+    toast("Поделиться можно только из Telegram");
   }
 
   function resetProgress() {
@@ -1200,15 +1238,17 @@
     el.sheetBackdrop.addEventListener("click", closeSheet);
     el.sheetClose.addEventListener("click", closeSheet);
     el.sheetBody.addEventListener("click", function (event) {
-      var link = event.target.closest(".card-credit-link");
-      if (link) {
+      var del = event.target.closest(".gallery-del");
+      if (del) {
+        // Кнопка модератора лежит рядом с миниатюрой внутри той же ячейки,
+        // поэтому гасим всплытие: иначе клик открыл бы просмотрщик.
         event.preventDefault();
         event.stopPropagation();
-        if (link.dataset.url) openExternalLink(link.dataset.url);
+        moderateDelete(del.dataset.entry, del.dataset.place, del.dataset.label);
         return;
       }
       var item = event.target.closest(".gallery-item");
-      if (item && item.dataset.entry) openLightbox(item.dataset.entry, item.dataset.caption);
+      if (item && item.dataset.entry) openLightbox(item.dataset.entry, item.dataset.caption, item.dataset.author);
     });
 
     if (el.lightboxClose) el.lightboxClose.addEventListener("click", closeLightbox);

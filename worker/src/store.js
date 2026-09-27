@@ -36,13 +36,25 @@ export const stateKey = (userId) => `state:${userId}`;
 export const indexKey = "photos:index";
 export const photoKey = (placeId, userId, ext) => `photo:${placeId}:${userId}.${ext}`;
 
-// Идентификатор записи галереи детерминирован по паре (место, автор),
-// поэтому повторная загрузка заменяет запись, а не создаёт дубликат
-// даже если два запроса пришли в одну и ту же миллисекунду.
-export const entryId = (placeId, userId) => `${placeId}_${userId}`;
+// Идентификатор записи галереи — случайный непрозрачный токен.
+//
+// Раньше он строился как "<placeId>_<userId>". Такой состав попадал в
+// публичный ответ галереи, а значит любой пользователь мог перебрать
+// числовые Telegram-id всех, кто загружал фото. Теперь связь с автором
+// хранится только в полях userId/author самой записи, которые наружу
+// отдаются лишь модератору.
+export function newEntryId() {
+  const bytes = new Uint8Array(24);
+  crypto.getRandomValues(bytes);
+  let id = "";
+  for (const byte of bytes) id += ID_ALPHABET[byte % ID_ALPHABET.length];
+  return id;
+}
 
-// Идентификатор записи длиннее, чем placeId или userId по отдельности,
-// поэтому для него свой предел: placeId (64) + "_" + userId (20).
+const ID_ALPHABET = "abcdefghijklmnopqrstuvwxyz0123456789";
+
+// Предел для идентификатора записи. Он больше не выводится из placeId и
+// userId, но остаётся разумным ограничением на длину ключа индекса.
 const MAX_ENTRY_ID_LENGTH = 96;
 
 export function isSafeEntryId(value) {
@@ -124,9 +136,15 @@ export async function writeIndex(env, index) {
 }
 
 // Запись добавляется в индекс только один раз: повторная загрузка того же
-// фото тем же пользователем перезаписывает объект, но не плодит дубли.
+// фото тем же пользователем перезаписывает объект, но не плодит дубль.
+// Совпадение ищется по паре (место, автор), а не по идентификатору:
+// идентификатор теперь случайный, поэтому он у двух загрузок разный.
 export function upsertEntry(entries, entry) {
-  const rest = entries.filter((item) => !(item.id === entry.id));
+  const isSame =
+    (item) =>
+      item.id === entry.id ||
+      (item.placeId === entry.placeId && item.userId === entry.userId);
+  const rest = entries.filter((item) => !isSame(item));
   rest.unshift(entry);
   return { entries: rest };
 }

@@ -1,5 +1,6 @@
 import { verifyInitData } from "./auth.js";
 import { putBlob, getBlob, deleteBlob } from "./blobs.js";
+import { isModerator, publicEntry } from "./moderation.js";
 import {
   LIMITS,
   emptyState,
@@ -7,7 +8,7 @@ import {
   sanitizeCaption,
   stateKey,
   photoKey,
-  entryId,
+  newEntryId,
   readIndex,
   writeIndex,
   upsertEntry,
@@ -145,14 +146,15 @@ export default {
       return fail("unauthorized", status, { reason: auth.reason }, cors);
     }
     const user = auth.user;
+    const moderator = isModerator(user.id, env);
 
     try {
       if (isState) return await handleState(request, env, user, cors);
-      if (isGallery) return await handleGallery(request, env, user, cors);
+      if (isGallery) return await handleGallery(request, env, user, cors, { moderator });
       if (isPhotos && request.method === "POST") return await handleUpload(request, env, user, cors);
-      if (isPhotos && request.method === "GET") return await handleGallery(request, env, user, cors);
+      if (isPhotos && request.method === "GET") return await handleGallery(request, env, user, cors, { moderator });
       if (photoMatch && request.method === "DELETE") {
-        return await handleDelete(photoMatch[1], env, user, cors);
+        return await handleDelete(photoMatch[1], env, user, cors, { moderator });
       }
       if (photoMatch && request.method === "GET") {
         return await handleGetPhoto(photoMatch[1], env, cors);
@@ -257,7 +259,10 @@ async function handleUpload(request, env, user, cors) {
     return fail("gallery_full", 503, { max: LIMITS.maxTotalPhotos }, cors);
   }
 
-  const id = entryId(placeId, user.id);
+  // При замене фотографии идентификатор записи сохраняется. Новый он
+  // только при первой загрузке: иначе у клиента, который держит в
+  // ownPhotos прежний id, удаление заменившегося фото начало бы отвечать 404.
+  const id = previous ? previous.id : newEntryId();
   const objectKey = photoKey(placeId, user.id, ext);
   const entry = {
     id,
@@ -290,23 +295,10 @@ async function handleUpload(request, env, user, cors) {
   );
 }
 
-// Публичный вид записи галереи.
-//
-// Автор намеренно не отдаётся: в приложении подпись к фото не показывается,
-// а username и userId в ответе только помогали бы опознать человека.
-// Своё фото пользователь и так узнаёт по id из canDelete.
-function publicEntry(entry) {
-  return {
-    id: entry.id,
-    placeId: entry.placeId,
-    caption: entry.caption || "",
-    contentType: entry.contentType,
-    size: entry.size,
-    createdAt: entry.createdAt,
-  };
-}
+// Публичный вид записи галереи и правила удаления описаны в moderation.js:
+// обычному пользователю отдаётся минимум, модератору — ещё и автор.
 
-async function handleGallery(request, env, user, cors) {
+async function handleGallery(request, env, user, cors, { moderator = false } = {}) {
   const url = new URL(request.url);
   const placeFilter = url.searchParams.get("placeId");
   const index = await readIndex(env);
@@ -326,9 +318,14 @@ async function handleGallery(request, env, user, cors) {
   return json(
     {
       ok: true,
-      entries: slice.map(publicEntry),
+      entries: slice.map((entry) => publicEntry(entry, { moderator })),
       total: entries.length,
-      canDelete: slice.filter((entry) => entry.userId === user.id).map((entry) => entry.id),
+      // Модератору можно удалять любую запись, поэтому ему в canDelete
+      // попадает весь срез, а не только собственные фотографии.
+      canDelete: moderator
+        ? slice.map((entry) => entry.id)
+        : slice.filter((entry) => entry.userId === user.id).map((entry) => entry.id),
+      isModerator: moderator,
     },
     200,
     CACHE_CONTROL,
@@ -338,11 +335,12 @@ async function handleGallery(request, env, user, cors) {
 
 // Параметр назван id, а не entryId, чтобы не затенять одноимённую
 // функцию-хелпер из store.js.
-async function handleDelete(id, env, user, cors) {
+async function handleDelete(id, env, user, cors, { moderator = false } = {}) {
   const index = await readIndex(env);
   const entry = index.entries.find((item) => item.id === id);
   if (!entry) return fail("not_found", 404, {}, cors);
-  if (entry.userId !== user.id) return fail("forbidden", 403, {}, cors);
+  const own = entry.userId === user.id;
+  if (!own && !moderator) return fail("forbidden", 403, {}, cors);
 
   await deleteBlob(env, entry.objectKey);
   const next = removeEntry(index.entries, id);
@@ -350,7 +348,12 @@ async function handleDelete(id, env, user, cors) {
 
   // Состояние править не нужно: привязка места к фото выводится из индекса
   // при каждом чтении, и удалённая запись из него исчезла.
-  return json({ ok: true, placeId: entry.placeId }, 200, {}, cors);
+  return json(
+    { ok: true, placeId: entry.placeId, moderated: moderator && !own },
+    200,
+    {},
+    cors,
+  );
 }
 
 async function handleGetPhoto(id, env, cors) {

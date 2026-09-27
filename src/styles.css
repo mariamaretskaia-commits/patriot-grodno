@@ -411,9 +411,6 @@ button { font: inherit; color: inherit; }
   margin: -6px 0 14px;
   line-height: 1.4;
 }
-.card-credit-link { color: var(--tg-link); text-decoration: none; }
-.card-credit-link:hover { text-decoration: underline; }
-
 .card-title { font-size: 1.3rem; font-weight: 700; margin-right: 34px; line-height: 1.35; }
 .card-meta { color: var(--tg-muted); font-size: .85rem; margin-top: 6px; line-height: 1.5; }
 .card-tags { display: flex; gap: 6px; flex-wrap: wrap; margin: 14px 0; }
@@ -546,6 +543,29 @@ body.is-gated > .sync-dot { display: none; }
 .gallery-empty { color: var(--tg-muted); font-size: .84rem; }
 .gallery-note { color: var(--tg-muted); font-size: .8rem; margin-top: 10px; }
 .gallery-more { margin-top: 10px; }
+/* Ячейка нужна, чтобы подпись с автором и кнопка удаления не оказались
+   внутри кнопки-миниатюры: вложенные кнопки браузер не поддерживает. */
+.gallery-cell { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.gallery-mod { display: flex; align-items: center; justify-content: space-between; gap: 4px; min-width: 0; }
+.gallery-author {
+  font-size: .64rem;
+  color: var(--tg-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.gallery-del {
+  flex: none;
+  border: 0;
+  border-radius: 6px;
+  padding: 2px 6px;
+  font: inherit;
+  font-size: .64rem;
+  background: rgba(232, 82, 82, .16);
+  color: #ff9d9d;
+  cursor: pointer;
+}
+.gallery-del:active { background: rgba(232, 82, 82, .3); }
 
 /* Просмотр фото во весь экран. */
 .lightbox {
