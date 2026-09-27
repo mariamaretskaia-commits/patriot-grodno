@@ -3,7 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
-<meta name="theme-color" content="#17212b">
+<meta name="theme-color" content="#14100b">
+<meta name="description" content="Память Гродненщины: карта мемориалов, истории, викторина и галерея">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="64x64" href="icon-64.png">
+<link rel="icon" type="image/png" sizes="256x256" href="icon-256.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <title>Память Гродненщины</title>
 <style>/*{{LEAFLET_CSS}}*/</style>
 <style>/*{{CSS}}*/</style>
@@ -26,7 +31,7 @@
 <header class="topbar">
   <div class="topbar-row">
     <div class="brand">
-      <div class="brand-mark" id="brandMark">★</div>
+      <div class="brand-mark" id="brandMark"><img src="img/emblem-128.webp" alt=""></div>
       <div>
         <div class="brand-title">Память Гродненщины</div>
         <div class="brand-sub" id="brandSub">19 мест памяти</div>
@@ -114,12 +119,16 @@
   <section class="view" id="view-passport">
     <div class="passport-card">
       <div class="passport-top">
-        <div class="passport-avatar" id="avatarImg">
-          <img src="img/avatar-user.jpg" alt="Аватар" onerror="this.style.display='none';this.parentNode.innerHTML='<span style=\'font-size:26px\'>★</span>';" />
-        </div>
+        <button class="passport-avatar" id="avatarPick" type="button" aria-label="Выбрать фото для аватарки">
+          <span class="passport-avatar-ph" id="avatarSlot">★</span>
+        </button>
         <div>
           <div class="passport-rank" id="passportRank">Начинающий</div>
           <div class="passport-sub" id="passportSub">0 очков</div>
+          <div class="passport-avatar-actions">
+            <span class="passport-avatar-hint" id="avatarHint">Аватар виден только вам</span>
+            <button class="link-btn" id="avatarRemove" type="button" hidden>Убрать</button>
+          </div>
         </div>
       </div>
       <div class="progress-track"><div class="progress-fill" id="passportFill"></div></div>

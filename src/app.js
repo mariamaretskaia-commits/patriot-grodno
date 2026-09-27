@@ -13,6 +13,12 @@
   var PHOTO_MAX_SIDE = 1280;
   var PHOTO_QUALITY = 0.82;
 
+  // Аватарка хранится в localStorage как data URI, поэтому она должна
+  // быть маленькой: 256 px хватает для значка 60 px даже на плотных
+  // экранах и весит около 15 КБ при лимите хранилища в 5 МБ.
+  var AVATAR_SIZE = 256;
+  var AVATAR_QUALITY = 0.82;
+
   var state = {
     visited: {},
     photos: {},
@@ -23,7 +29,11 @@
     // pendingDeletes: id фото, удалённых офлайн и ждущих сети.
     // Оба поля живут только на устройстве и на сервер не отправляются.
     photoIds: {},
-    pendingDeletes: []
+    pendingDeletes: [],
+    // avatar: выбранная пользователем аватарка как data URI. Живёт только
+    // на устройстве и на сервер не отправляется — её видит только владелец.
+    // На устройстве это data URI, поэтому размер заранее ограничен.
+    avatar: ""
   };
 
   var places = [];
@@ -39,6 +49,7 @@
   var quizRoundCorrect = 0;
   var tileFailures = 0;
   var photoInput = null;
+  var avatarInput = null;
   var homeScreenOffered = false;
 
   var el = {};
@@ -68,11 +79,19 @@
       if (!raw) return;
       var saved = JSON.parse(raw);
       Object.keys(state).forEach(function (key) {
-        if (!saved[key] || typeof saved[key] !== "object") return;
+        var value = saved[key];
+        if (typeof value === "undefined" || value === null) return;
+        // Строковые поля (сейчас это avatar с data URI) не проходят
+        // проверку typeof === "object" и молча остались бы пустыми.
+        if (typeof state[key] === "string") {
+          if (typeof value === "string") state[key] = value;
+          return;
+        }
+        if (typeof value !== "object") return;
         // Массив ожидается массивом, карта — картой: иначе полезшие в
         // localStorage данные другого формата сломали бы цикл удаления.
-        if (Array.isArray(state[key]) !== Array.isArray(saved[key])) return;
-        state[key] = saved[key];
+        if (Array.isArray(state[key]) !== Array.isArray(value)) return;
+        state[key] = value;
       });
     } catch (err) {
       storageAvailable = false;
@@ -98,19 +117,78 @@
   }
 
   
-  function setAvatar(url) {
-    if (!url) return;
-    var img = document.createElement("img");
-    img.src = url;
-    img.alt = "Аватар";
-    img.style.cssText = "width:100%;height:100%;object-fit:cover;border-radius:inherit;display:block;";
-    img.onerror = function() { this.style.display = "none"; };
+  function setBrandMarkFallback() {
+    // Подстраховка на случай, если картинка герба не встроилась при сборке:
+    // показываем звезду, а не пустой круг.
     var m = document.getElementById("brandMark");
-    if (m) { m.innerHTML = ""; m.style.background = "#1a1814"; m.style.border = "1.5px solid #8a6f3f"; m.appendChild(img.cloneNode()); }
-    var p = document.getElementById("avatarImg");
-    if (p) { p.innerHTML = ""; p.style.background = "#2a2418"; p.style.border = "2px solid #8a6f3f"; p.appendChild(img); }
+    if (!m || m.querySelector("img")) return;
+    m.textContent = "★";
   }
-function tg() {
+
+  function renderAvatar() {
+    var slot = $("avatarSlot");
+    var remove = $("avatarRemove");
+    var pick = $("avatarPick");
+    var hint = $("avatarHint");
+    if (!slot) return;
+    if (state.avatar) {
+      slot.innerHTML = "";
+      var img = document.createElement("img");
+      img.src = state.avatar;
+      img.alt = "Ваша аватарка";
+      img.addEventListener("error", function () {
+        // Битая картинка не должна оставлять пустое место.
+        slot.textContent = "★";
+        state.avatar = "";
+        saveState(true);
+        if (remove) remove.hidden = true;
+        if (pick) pick.setAttribute("aria-label", "Выбрать фото для аватарки");
+      });
+      slot.appendChild(img);
+      if (remove) remove.hidden = false;
+      if (pick) pick.setAttribute("aria-label", "Изменить аватарку");
+      if (hint) hint.textContent = "Хранится только на этом устройстве";
+    } else {
+      slot.textContent = "★";
+      if (remove) remove.hidden = true;
+      if (pick) pick.setAttribute("aria-label", "Выбрать фото для аватарки");
+      if (hint) hint.textContent = "Аватар виден только вам";
+    }
+  }
+
+  function pickAvatar() {
+    if (!avatarInput) {
+      avatarInput = document.createElement("input");
+      avatarInput.type = "file";
+      avatarInput.accept = "image/*";
+      avatarInput.style.display = "none";
+      document.body.appendChild(avatarInput);
+    }
+    avatarInput.value = "";
+    avatarInput.onchange = function () {
+      var file = avatarInput.files && avatarInput.files[0];
+      if (!file) return;
+      cropSquare(file, AVATAR_SIZE, AVATAR_QUALITY).then(function (dataUri) {
+        state.avatar = dataUri;
+        saveState(true);
+        renderAvatar();
+        haptic("success");
+        toast("Аватарка обновлена", true);
+      }).catch(function () {
+        toast("Не удалось прочитать файл");
+      });
+    };
+    avatarInput.click();
+  }
+
+  function clearAvatar() {
+    state.avatar = "";
+    saveState(true);
+    renderAvatar();
+    toast("Аватарка убрана");
+  }
+
+  function tg() {
     return (window.Telegram && window.Telegram.WebApp) || null;
   }
 
@@ -974,6 +1052,33 @@ function tg() {
     });
   }
 
+  // Аватарку показываем в круге, поэтому кадрируем по центру: иначе широкий
+  // снимок превратился бы в узкую полоску с обрезанными головами.
+  function cropSquare(file, size, quality) {
+    return new Promise(function (resolve, reject) {
+      var reader = new FileReader();
+      reader.onerror = reject;
+      reader.onload = function () {
+        var image = new Image();
+        image.onerror = reject;
+        image.onload = function () {
+          var side = Math.min(image.width, image.height);
+          var sx = Math.round((image.width - side) / 2);
+          var sy = Math.round((image.height - side) / 2);
+          var canvas = document.createElement("canvas");
+          canvas.width = size;
+          canvas.height = size;
+          canvas.getContext("2d").drawImage(image, sx, sy, side, side, 0, 0, size, size);
+          var dataUri = canvas.toDataURL("image/jpeg", quality);
+          if (dataUri && dataUri !== "data:,") resolve(dataUri);
+          else reject(new Error("toDataURL failed"));
+        };
+        image.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
   var dbPromise = null;
 
   function openDb() {
@@ -1442,7 +1547,12 @@ function tg() {
     cacheElements();
     loadState();
     initTelegram();
-    setAvatar("img/avatar-user.jpg");
+    setBrandMarkFallback();
+    renderAvatar();
+    var avatarPick = $("avatarPick");
+    if (avatarPick) avatarPick.addEventListener("click", pickAvatar);
+    var avatarRemove = $("avatarRemove");
+    if (avatarRemove) avatarRemove.addEventListener("click", clearAvatar);
     readData().then(function () {
       fillFilters();
       renderList();

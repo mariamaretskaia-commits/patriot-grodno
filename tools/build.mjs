@@ -1,4 +1,4 @@
-import { readFile, writeFile, mkdir, readdir } from "node:fs/promises";
+import { readFile, writeFile, mkdir, readdir, copyFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -19,6 +19,18 @@ const paths = {
   photos: resolve(root, "img/opt"),
   out: resolve(root, "dist/index.html"),
   site: resolve(root, "index.html"),
+  // Иконки лежат отдельными файлами: собранная страница — один HTML,
+  // и картинку для вкладки браузера положить можно только рядом с ним.
+  icons: ["favicon.ico", "icon-64.png", "icon-192.png", "icon-256.png", "icon-512.png", "apple-touch-icon.png"],
+  // Статика, которая должна работать при любом размещении готовой
+  // страницы: её встраиваем как data URI, иначе файл пришлось бы искать
+  // рядом с документом. Ключ — путь, как он указан в исходниках.
+  inlineAssets: {
+    "img/emblem-128.webp": { file: resolve(root, "img/emblem-128.webp"), mime: "image/webp" },
+  },
+  // Иконку вкладки встраиваем как PNG: data URI с image/x-icon
+  // понимают не все браузеры, а PNG поддерживают все.
+  tabIcon: { file: resolve(root, "icon-64.png"), mime: "image/png" },
 };
 
 const IMAGE_EXT = /\.(webp|png|jpe?g)$/i;
@@ -99,14 +111,45 @@ async function main() {
   const leftovers = html.match(/\/\*\{\{[A-Z_]+\}\}\*\//g);
   if (leftovers) throw new Error(`Не заменены плейсхолдеры: ${leftovers.join(", ")}`);
 
+  // Встраиваем статику после подстановки скриптов: ссылки на неё есть
+  // и в разметке, и в app.js, а после сборки всё лежит в одном файле,
+  // поэтому замена идёт по готовому документу.
+  let inlinedAssets = 0;
+  for (const [path, spec] of Object.entries(paths.inlineAssets)) {
+    if (!existsSync(spec.file)) throw new Error(`Нет статики для встраивания: ${path} (создайте её скриптом tools/)`);
+    const uri = `data:${spec.mime};base64,${(await readFile(spec.file)).toString("base64")}`;
+    html = html.split(path).join(uri);
+    inlinedAssets += 1;
+  }
+  if (existsSync(paths.tabIcon.file)) {
+    const uri = `data:${paths.tabIcon.mime};base64,${(await readFile(paths.tabIcon.file)).toString("base64")}`;
+    html = html.split('href="favicon.ico"').join(`href="${uri}"`);
+  } else {
+    console.warn("  ВНИМАНИЕ: нет icon-64.png, иконка вкладки останется внешней");
+  }
+
   await mkdir(dirname(paths.out), { recursive: true });
   await writeFile(paths.out, html, "utf8");
   await writeFile(paths.site, html, "utf8");
+
+  // Копируем иконки в dist, иначе локальный запуск dist/index.html
+  // показывает битую иконку вкладки, хотя на Pages всё в порядке.
+  const missingIcons = [];
+  for (const name of paths.icons) {
+    const from = resolve(root, name);
+    if (!existsSync(from)) { missingIcons.push(name); continue; }
+    await copyFile(from, resolve(dirname(paths.out), name));
+  }
 
   const kb = (value) => `${(value / 1024).toFixed(1)} КБ`;
   console.log(`Собрано: ${paths.out}`);
   console.log(`  копия для GitHub Pages: ${paths.site}`);
   console.log(`  размер: ${kb(Buffer.byteLength(html))}`);
+  console.log(`  иконок скопировано в dist: ${paths.icons.length - missingIcons.length}`);
+  console.log(`  встроено в страницу: ${inlinedAssets + 1} файла (статика и иконка вкладки)`);
+  if (missingIcons.length) {
+    console.warn(`  ВНИМАНИЕ, иконки не найдены: ${missingIcons.join(", ")} — выполните tools/make_icon.py`);
+  }
   console.log(`  мест: ${places.length}, вопросов: ${questions.length}`);
   console.log(`  фото встроено: ${Object.keys(photos).length}, заглушек: ${places.length - Object.keys(photos).length}`);
   if (Object.keys(photoCredits).length !== Object.keys(photos).length) {

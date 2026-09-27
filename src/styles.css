@@ -1,22 +1,59 @@
+/* Тёплая сепийная тема: тёмная выжженная земля, глиняная глина и
+   песчаный свет. Цвета сняты с фотографии-эталона, базовые вынесены
+   отдельно, чтобы перекрасить страницу целиком было достаточно правки
+   одного блока, а не поиска по шестистам строкам.
+
+   Контраст к тексту проверен расчётом: текст 11.8:1 на фоне, 10.5:1 на
+   карточке, приглушённый 7.2:1, зелёный и красный статусы 6.0:1 и 5.2:1.
+   Граница --tg-line нужна только для разделения, а у элементов ввода
+   своя, более светлая: иначе поле формы не проходит 3:1 и не читается
+   как доступное для ввода. */
 :root {
-  --tg-bg: #121218;
-  --tg-surface: #1a1814;
-  --tg-surface-2: #23211a;
-  --tg-text: #efe9dc;
-  --tg-muted: #b0a898;
-  --tg-accent: #2a2a26;
-  --tg-accent-soft: #35352a;
-  --tg-link: #d4b87a;
+  --bg: #14100b;
+  --surface: #241c15;
+  --surface-2: #36302c;
+  --heading: #eddac4;
+  --text: #e0c9ad;
+  --muted: #b39c85;
+  --accent: #dfa56f;
+  --accent-deep: #582f1e;
+  /* Средний тон для рамок и декора. Как текст мелкого кегля не
+     используется: на тёмном фоне он слишком близок к фону. */
+  --mid: #9f6d50;
+  --line-strong: #7a6455;
+  --decorative: #624e43;
+
+  --tg-bg: var(--bg);
+  --tg-surface: var(--surface);
+  --tg-surface-2: var(--surface-2);
+  --tg-text: var(--text);
+  --tg-muted: var(--muted);
+  --tg-accent: var(--surface-2);
+  --tg-accent-soft: #4a4038;
+  --tg-link: var(--heading);
   --tg-safe-top: 0px;
   --tg-safe-bottom: 0px;
   --tg-safe-left: 0px;
   --tg-safe-right: 0px;
-  --tg-gold: #c9a84c;
-  --tg-green: #5a7a4e;
-  --tg-red: #9a2a2a;
+  /* Вместо золота Telegram — приглушённые тона темы. Смысл
+     «верно/неверно» сохраняется, а цвета не спорят с акцентом. */
+  --tg-gold: var(--accent);
+  --tg-green: #93a06a;
+  --tg-red: #c97a63;
+
+  /* Полупрозрачные линии: тёплые, а не белые, иначе на тёмном фоне
+     рамки выглядят серыми пятнами. */
+  --tg-line-soft: rgba(224, 201, 173, .08);
+  --tg-line: rgba(224, 201, 173, .15);
+  --tg-line-strong: rgba(224, 201, 173, .26);
+  --tg-on-accent: #241c15;
+
+  --font-display: Georgia, "Iowan Old Style", "Palatino Linotype", "Times New Roman", serif;
+  --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
   --radius: 16px;
   --radius-sm: 10px;
-  --shadow: 0 8px 24px rgba(0, 0, 0, .35);
+  --shadow: 0 8px 24px rgba(0, 0, 0, .5);
   --tap: 44px;
 }
 
@@ -27,7 +64,9 @@ html, body {
   padding: 0;
   background: var(--tg-bg);
   color: var(--tg-text);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Playfair Display", Georgia, "Times New Roman", serif;
+  /* Интерфейс — безсерифный: на экранах телефона он читается чётче, а
+     засечки оставлены заголовкам, где они дают «старый» характер. */
+  font-family: var(--font-ui);
   font-size: 16px;
   line-height: 1.6;
   -webkit-tap-highlight-color: transparent;
@@ -49,7 +88,7 @@ button { font: inherit; color: inherit; }
   z-index: 900;
   padding: 12px 16px 0;
   background: var(--tg-bg);
-  border-bottom: 1px solid rgba(255, 255, 255, .06);
+  border-bottom: 1px solid rgba(224, 201, 173, .09);
   padding-top: max(12px, env(safe-area-inset-top), var(--tg-safe-top));
 }
 
@@ -61,20 +100,26 @@ button { font: inherit; color: inherit; }
   width: 42px; height: 42px;
   display: grid; place-items: center;
   border-radius: 50%;
-  background: linear-gradient(145deg, #3a3020, #2a2015);
-  border: 1.5px solid #8a6f3f;
+  /* Подложка ровная, без градиента: герб пришёл с прозрачностью, и любой
+     рисунок под ним спорил бы с рисунком герба. */
+  background: var(--tg-surface-2);
+  border: 1.5px solid var(--decorative);
   color: var(--tg-gold);
   font-size: 18px;
   flex: none;
-  box-shadow: inset 0 0 12px rgba(201,168,76,.18), 0 2px 8px rgba(0,0,0,.35);
+  overflow: hidden;
+  box-shadow: inset 0 0 12px rgba(224, 201, 173, .1), 0 2px 8px rgba(0, 0, 0, .35);
 }
+/* contain, а не cover: герб нельзя обрезать по кругу, иначе срезаются
+   края щита. */
+.brand-mark img { width: 100%; height: 100%; object-fit: contain; display: block; }
 
 .brand-title { font-weight: 650; font-size: 1.02rem; letter-spacing: .01em; }
 .brand-sub { color: var(--tg-muted); font-size: .78rem; }
 
 .score {
   background: var(--tg-surface);
-  border: 1px solid rgba(255, 255, 255, .08);
+  border: 1px solid rgba(224, 201, 173, .12);
   border-radius: 12px;
   padding: 5px 12px;
   text-align: center;
@@ -89,7 +134,7 @@ button { font: inherit; color: inherit; }
 .progress-track {
   height: 7px;
   border-radius: 99px;
-  background: rgba(255, 255, 255, .09);
+  background: var(--tg-line-soft);
   overflow: hidden;
 }
 .progress-fill {
@@ -139,7 +184,7 @@ button { font: inherit; color: inherit; }
 .field select, .field input {
   min-height: var(--tap);
   border-radius: var(--radius-sm);
-  border: 1px solid rgba(255, 255, 255, .1);
+  border: 1px solid rgba(224, 201, 173, .14);
   background: var(--tg-surface);
   color: var(--tg-text);
   padding: 0 12px;
@@ -152,7 +197,7 @@ button { font: inherit; color: inherit; }
 .btn-reset {
   min-height: var(--tap);
   border-radius: var(--radius-sm);
-  border: 1px solid rgba(255, 255, 255, .1);
+  border: 1px solid rgba(224, 201, 173, .14);
   background: transparent;
   color: var(--tg-muted);
   cursor: pointer;
@@ -160,14 +205,22 @@ button { font: inherit; color: inherit; }
 }
 
 .map-wrap { position: relative; border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
-#map { height: 46vh; min-height: 280px; background: #202c38; }
+#map { height: 46vh; min-height: 280px; background: #241c15; }
+
+/* Плитки OpenStreetMap приглушены до тёплого камня: в исходном виде
+   они сине-зелёные и выбиваются из палитры страницы. Фильтр applied
+   только к слою плиток — метки и элементы управления остаются
+   контрастными и не темнеют вместе с картой. */
+.leaflet-tile-pane {
+  filter: sepia(.42) saturate(.62) brightness(.74) contrast(1.04) hue-rotate(-8deg);
+}
 
 .leaflet-control-attribution {
   font-size: 10px;
   line-height: 1.4;
   padding: 1px 5px;
-  background: rgba(23, 33, 43, .55);
-  color: rgba(255, 255, 255, .6);
+  background: rgba(29, 30, 28, .62);
+  color: rgba(233, 224, 211, .7);
   opacity: .55;
   transition: opacity .15s ease;
 }
@@ -176,8 +229,8 @@ button { font: inherit; color: inherit; }
 
 .map-note {
   position: absolute; left: 10px; right: 10px; bottom: 10px;
-  background: rgba(23, 33, 43, .92);
-  border: 1px solid rgba(255, 255, 255, .12);
+  background: rgba(29, 30, 28, .92);
+  border: 1px solid rgba(224, 201, 173, .16);
   border-radius: var(--radius-sm);
   padding: 8px 10px;
   font-size: .78rem;
@@ -197,14 +250,14 @@ button { font: inherit; color: inherit; }
   width: 100%;
   text-align: left;
   background: var(--tg-surface);
-  border: 1px solid rgba(255, 255, 255, .07);
+  border: 1px solid var(--tg-line-soft);
   border-radius: var(--radius);
   padding: 14px;
   cursor: pointer;
   min-height: 88px;
 }
 .place-card:active { transform: scale(.99); }
-.place-card.is-visited { border-color: rgba(76, 175, 125, .45); }
+.place-card.is-visited { border-color: rgba(147, 160, 106, .5); }
 
 .place-thumb {
   width: 60px; height: 60px;
@@ -224,15 +277,32 @@ button { font: inherit; color: inherit; }
 }
 
 .place-main { min-width: 0; }
-.place-name { font-weight: 600; font-size: .95rem; line-height: 1.4; }
-.place-meta { color: var(--tg-muted); font-size: .78rem; margin-top: 5px; }
+/* display:block здесь обязателен, а не для красоты: разметка отдаёт
+   название и подпись inline-элементами, и без блочного расклада
+   margin-top у подписи не действует вовсе — она прилипает к названию в
+   одну строку. Длинные названия переносим, иначе карточка растягивается. */
+.place-name {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: .95rem;
+  line-height: 1.4;
+  overflow-wrap: break-word;
+}
+.place-meta {
+  display: block;
+  color: var(--tg-muted);
+  font-size: .78rem;
+  margin-top: 5px;
+  overflow-wrap: break-word;
+}
 .tag {
   font-size: .68rem;
   padding: 4px 10px;
   border-radius: 99px;
-  background: rgba(58, 109, 156, .18);
-  color: #a9c8e4;
-  border: 1px solid rgba(58, 109, 156, .3);
+  background: rgba(201, 122, 99, .16);
+  color: var(--heading);
+  border: 1px solid rgba(159, 109, 80, .34);
   line-height: 1.5;
 }
 .place-address {
@@ -247,21 +317,21 @@ button { font: inherit; color: inherit; }
   -webkit-box-orient: vertical;
 }
 
-.place-check { width: 26px; height: 26px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, .18); display: grid; place-items: center; font-size: .8rem; color: transparent; flex: none; }
-.place-card.is-visited .place-check { border-color: var(--tg-green); background: rgba(76, 175, 125, .2); color: var(--tg-green); }
+.place-check { width: 26px; height: 26px; border-radius: 50%; border: 2px solid rgba(224, 201, 173, .28); display: grid; place-items: center; font-size: .8rem; color: transparent; flex: none; }
+.place-card.is-visited .place-check { border-color: var(--tg-green); background: rgba(147, 160, 106, .22); color: var(--tg-green); }
 
 .marker-pin {
   width: 30px; height: 30px;
   border-radius: 50% 50% 50% 4px;
   transform: rotate(-45deg);
   background: linear-gradient(145deg, var(--tg-accent-soft), var(--tg-accent));
-  border: 2px solid rgba(255, 255, 255, .85);
+  border: 2px solid rgba(246, 241, 232, .9);
   box-shadow: 0 3px 10px rgba(0, 0, 0, .45);
   display: grid; place-items: center;
 }
 .marker-pin span { transform: rotate(45deg); color: var(--tg-gold); font-size: 13px; line-height: 1; }
-.marker-pin.is-visited { background: linear-gradient(145deg, #5cbf90, #2f7f59); }
-.marker-pin.is-active { outline: 3px solid rgba(232, 182, 76, .55); outline-offset: 2px; }
+.marker-pin.is-visited { background: linear-gradient(145deg, #a9b57e, #6f7a4c); }
+.marker-pin.is-active { outline: 3px solid rgba(224, 201, 173, .6); outline-offset: 2px; }
 
 .quiz-head { display: flex; align-items: center; justify-content: space-between; }
 .quiz-title { font-size: 1.25rem; font-weight: 700; }
@@ -271,7 +341,7 @@ button { font: inherit; color: inherit; }
 
 .quiz-card, .quiz-finish, .passport-card {
   background: var(--tg-surface);
-  border: 1px solid rgba(255, 255, 255, .07);
+  border: 1px solid var(--tg-line-soft);
   border-radius: var(--radius);
   padding: 18px;
   box-shadow: var(--shadow);
@@ -283,7 +353,7 @@ button { font: inherit; color: inherit; }
   text-align: left;
   min-height: var(--tap);
   border-radius: var(--radius-sm);
-  border: 1px solid rgba(255, 255, 255, .12);
+  border: 1px solid rgba(224, 201, 173, .16);
   background: var(--tg-surface-2);
   padding: 12px 14px;
   cursor: pointer;
@@ -292,15 +362,15 @@ button { font: inherit; color: inherit; }
 .quiz-option .opt-key {
   width: 24px; height: 24px; flex: none;
   border-radius: 7px;
-  background: rgba(255, 255, 255, .08);
+  background: rgba(224, 201, 173, .12);
   display: grid; place-items: center;
   font-size: .78rem; color: var(--tg-muted);
 }
-.quiz-option.is-correct { border-color: var(--tg-green); background: rgba(76, 175, 125, .16); }
-.quiz-option.is-wrong { border-color: var(--tg-red); background: rgba(224, 108, 108, .14); }
+.quiz-option.is-correct { border-color: var(--tg-green); background: rgba(147, 160, 106, .18); }
+.quiz-option.is-wrong { border-color: var(--tg-red); background: rgba(201, 122, 99, .16); }
 .quiz-option:disabled { cursor: default; }
 
-.quiz-feedback { margin-top: 16px; border-top: 1px solid rgba(255, 255, 255, .08); padding-top: 14px; }
+.quiz-feedback { margin-top: 16px; border-top: 1px solid rgba(224, 201, 173, .12); padding-top: 14px; }
 .quiz-verdict { font-weight: 700; margin-bottom: 6px; }
 .quiz-verdict.ok { color: var(--tg-green); }
 .quiz-verdict.no { color: var(--tg-red); }
@@ -316,11 +386,14 @@ button { font: inherit; color: inherit; }
   font-weight: 600;
   cursor: pointer;
 }
-.btn-primary { background: var(--tg-accent); color: #fff; }
-.btn-primary:active { background: var(--tg-accent-soft); }
-.btn-ghost { background: transparent; border-color: rgba(255, 255, 255, .16); color: var(--tg-muted); }
-.btn-danger { background: transparent; border-color: rgba(224, 108, 108, .4); color: var(--tg-red); }
-.btn-gold { background: linear-gradient(145deg, #f0c75e, #d9a03a); color: #2a1f05; }
+/* Главная кнопка — тановая с тёмным текстом (контраст 7.8:1). Раньше она
+   брала --tg-accent, который в новой палитре тёмный: тёмное на тёмном
+   читалось только за счёт рамки. */
+.btn-primary { background: var(--accent); color: var(--tg-on-accent); }
+.btn-primary:active { background: #c98f5c; }
+.btn-ghost { background: transparent; border-color: var(--line-strong); color: var(--tg-muted); }
+.btn-danger { background: transparent; border-color: rgba(201, 122, 99, .5); color: var(--tg-red); }
+.btn-gold { background: linear-gradient(145deg, #e8bd8b, #dfa56f); color: #241c15; }
 
 .quiz-finish { text-align: center; }
 .finish-score { font-size: 2.6rem; font-weight: 800; color: var(--tg-gold); }
@@ -329,21 +402,50 @@ button { font: inherit; color: inherit; }
 .passport-top { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
 .passport-avatar {
   width: 60px; height: 60px; border-radius: 16px;
-  background: linear-gradient(145deg, #2a2418, #181410);
-  border: 2px solid #8a6f3f;
+  background: var(--tg-surface-2);
+  border: 2px solid var(--decorative);
   display: grid; place-items: center;
   color: var(--tg-gold); font-size: 28px; flex: none;
-  box-shadow: inset 0 0 16px rgba(201,168,76,.15), 0 4px 12px rgba(0,0,0,.4);
+  box-shadow: inset 0 0 16px rgba(224, 201, 173, .1), 0 4px 12px rgba(0, 0, 0, .4);
   overflow: hidden;
   position: relative;
+  /* Аватарка — кнопка выбора файла, поэтому снимаем всё оформление,
+     которое приходит с button по умолчанию, иначе по краю появляется
+     системная рамка, а внутри — свои отступы. */
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
 }
+.passport-avatar:active { transform: scale(.96); }
+.passport-avatar-ph { display: grid; place-items: center; width: 100%; height: 100%; }
 .passport-avatar img {
   width: 100%; height: 100%;
   object-fit: cover;
   border-radius: 14px;
+  display: block;
 }
-.passport-rank { font-size: 1.15rem; font-weight: 700; }
+.passport-rank { font-size: 1.15rem; font-weight: 700; font-family: var(--font-display); }
 .passport-sub { color: var(--tg-muted); font-size: .85rem; }
+.passport-avatar-actions {
+  display: flex; align-items: center; gap: 8px;
+  margin-top: 4px; flex-wrap: wrap;
+}
+.passport-avatar-hint { color: var(--tg-muted); font-size: .74rem; }
+.link-btn {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: var(--tg-link);
+  font: inherit;
+  font-size: .74rem;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+  min-height: 24px;
+}
+.link-btn:active { opacity: .7; }
 
 .stat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 18px; }
 .stat { background: var(--tg-surface-2); border-radius: var(--radius-sm); padding: 14px; text-align: center; }
@@ -355,13 +457,13 @@ button { font: inherit; color: inherit; }
 
 .badge {
   background: var(--tg-surface);
-  border: 1px solid rgba(255, 255, 255, .07);
+  border: 1px solid var(--tg-line-soft);
   border-radius: var(--radius);
   padding: 14px 12px;
   text-align: center;
   opacity: .48;
 }
-.badge.is-earned { opacity: 1; border-color: rgba(232, 182, 76, .4); background: linear-gradient(180deg, rgba(232, 182, 76, .1), var(--tg-surface)); }
+.badge.is-earned { opacity: 1; border-color: rgba(224, 201, 173, .45); background: linear-gradient(180deg, rgba(224, 201, 173, .12), var(--tg-surface)); }
 .badge-icon { font-size: 28px; }
 .badge-name { font-weight: 600; font-size: .86rem; margin-top: 6px; }
 .badge-hint { color: var(--tg-muted); font-size: .72rem; margin-top: 3px; }
@@ -385,7 +487,7 @@ button { font: inherit; color: inherit; }
 }
 @keyframes slide-up { from { transform: translateY(24px); opacity: .4; } to { transform: none; opacity: 1; } }
 
-.sheet-handle { width: 40px; height: 4px; border-radius: 99px; background: rgba(255, 255, 255, .22); margin: 6px auto 10px; }
+.sheet-handle { width: 40px; height: 4px; border-radius: 99px; background: rgba(224, 201, 173, .3); margin: 6px auto 10px; }
 .sheet-close {
   position: absolute; top: 14px; right: 14px;
   width: 34px; height: 34px; border-radius: 50%;
@@ -409,7 +511,7 @@ button { font: inherit; color: inherit; }
   border-radius: var(--radius);
   background: linear-gradient(145deg, var(--tg-accent), var(--tg-surface-2));
   display: grid; place-items: center;
-  color: rgba(255, 255, 255, .5);
+  color: rgba(233, 224, 211, .55);
   font-size: .9rem;
   margin-bottom: 16px;
   text-align: center;
@@ -425,13 +527,13 @@ button { font: inherit; color: inherit; }
 .card-title { font-size: 1.3rem; font-weight: 700; margin-right: 34px; line-height: 1.35; }
 .card-meta { color: var(--tg-muted); font-size: .85rem; margin-top: 6px; line-height: 1.5; }
 .card-tags { display: flex; gap: 6px; flex-wrap: wrap; margin: 14px 0; }
-.card-full { font-size: .95rem; color: #d7e0e8; line-height: 1.65; margin: 0; }
+  .card-full { font-size: .95rem; color: var(--text); line-height: 1.65; margin: 0; }
 .card-address {
   font-size: .88rem;
   color: var(--tg-muted);
   margin-top: 16px;
   padding-top: 14px;
-  border-top: 1px solid rgba(255, 255, 255, .08);
+  border-top: 1px solid rgba(224, 201, 173, .12);
   line-height: 1.5;
 }
 .card-actions { display: grid; gap: 10px; margin-top: 20px; }
@@ -447,7 +549,7 @@ button { font: inherit; color: inherit; }
   transform: translateX(-50%);
   z-index: 1100;
   background: var(--tg-surface-2);
-  border: 1px solid rgba(255, 255, 255, .14);
+  border: 1px solid rgba(224, 201, 173, .2);
   border-radius: 14px;
   padding: 12px 18px;
   font-size: .88rem;
@@ -456,7 +558,7 @@ button { font: inherit; color: inherit; }
   text-align: center;
   animation: slide-up .2s ease;
 }
-.toast.is-award { border-color: rgba(232, 182, 76, .55); color: var(--tg-gold); font-weight: 600; }
+.toast.is-award { border-color: rgba(224, 201, 173, .6); color: var(--tg-gold); font-weight: 600; }
 
 /* --- Экран блокировки вне Telegram ------------------------------------ */
 .tgate {
@@ -466,15 +568,15 @@ button { font: inherit; color: inherit; }
   display: grid;
   place-items: center;
   padding: 24px;
-  background: var(--tg-bg, #17212b);
+  background: var(--tg-bg);
 }
 .tgate[hidden] { display: none; }
 .tgate-inner { max-width: 380px; text-align: center; }
-.tgate-mark { font-size: 56px; color: var(--tg-gold, #e8b64c); line-height: 1; }
+.tgate-mark { font-size: 56px; color: var(--tg-gold); line-height: 1; }
 .tgate-title { font-size: 1.4rem; margin: 12px 0 10px; }
-.tgate-text { color: var(--tg-muted, #9aa7b4); line-height: 1.55; margin: 0 0 22px; }
+.tgate-text { color: var(--tg-muted); line-height: 1.55; margin: 0 0 22px; }
 .tgate-btn { display: inline-block; text-decoration: none; padding: 13px 22px; }
-.tgate-hint { color: var(--tg-muted, #9aa7b4); font-size: .82rem; margin-top: 16px; }
+.tgate-hint { color: var(--tg-muted); font-size: .82rem; margin-top: 16px; }
 
 /* Тело под замком не должно прокручиваться. */
 body.is-locked { overflow: hidden; }
@@ -500,15 +602,15 @@ body.is-gated > .sync-dot { display: none; }
   border-radius: 999px;
   font-size: .74rem;
   background: var(--tg-surface-2);
-  border: 1px solid rgba(255, 255, 255, .14);
+  border: 1px solid rgba(224, 201, 173, .2);
   color: var(--tg-muted);
   box-shadow: var(--shadow);
 }
 .sync-dot.is-visible { display: inline-flex; }
-.sync-dot.is-error { color: var(--tg-red); border-color: rgba(224, 108, 108, .4); }
+.sync-dot.is-error { color: var(--tg-red); border-color: rgba(201, 122, 99, .5); }
 
 /* --- Галерея участников в карточке места ----------------------------- */
-.gallery { margin-top: 20px; padding-top: 16px; border-top: 1px solid rgba(255, 255, 255, .08); }
+.gallery { margin-top: 20px; padding-top: 16px; border-top: 1px solid rgba(224, 201, 173, .12); }
 .gallery[hidden] { display: none; }
 .gallery-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
 .gallery-title { font-weight: 600; font-size: .95rem; }
@@ -520,12 +622,12 @@ body.is-gated > .sync-dot { display: none; }
   border-radius: 12px;
   overflow: hidden;
   background: var(--tg-surface-2);
-  border: 1px solid rgba(255, 255, 255, .06);
+  border: 1px solid rgba(224, 201, 173, .09);
   cursor: zoom-in;
   padding: 0;
 }
 .gallery-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.gallery-item.is-mine { border-color: rgba(232, 182, 76, .5); }
+.gallery-item.is-mine { border-color: rgba(224, 201, 173, .55); }
 .gallery-mine-tag {
   position: absolute;
   left: 5px;
@@ -544,7 +646,7 @@ body.is-gated > .sync-dot { display: none; }
   padding: 12px 6px 4px;
   font-size: .68rem;
   line-height: 1.25;
-  color: #fff;
+  color: var(--tg-on-accent);
   background: linear-gradient(transparent, rgba(0, 0, 0, .78));
   text-align: left;
   overflow: hidden;
@@ -572,11 +674,11 @@ body.is-gated > .sync-dot { display: none; }
   padding: 2px 6px;
   font: inherit;
   font-size: .64rem;
-  background: rgba(232, 82, 82, .16);
-  color: #ff9d9d;
+  background: rgba(201, 122, 99, .2);
+  color: #e2a894;
   cursor: pointer;
 }
-.gallery-del:active { background: rgba(232, 82, 82, .3); }
+.gallery-del:active { background: rgba(201, 122, 99, .34); }
 
 /* Просмотр фото во весь экран. */
 .lightbox {
@@ -590,7 +692,7 @@ body.is-gated > .sync-dot { display: none; }
 }
 .lightbox[hidden] { display: none; }
 .lightbox img { max-width: 100%; max-height: 82vh; border-radius: 12px; }
-.lightbox-caption { color: #dfe6ec; text-align: center; margin-top: 14px; max-width: 520px; line-height: 1.5; }
+.lightbox-caption { color: var(--heading); text-align: center; margin-top: 14px; max-width: 520px; line-height: 1.5; }
 .lightbox-close {
   position: absolute;
   top: 16px;
@@ -598,9 +700,9 @@ body.is-gated > .sync-dot { display: none; }
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, .2);
-  background: rgba(255, 255, 255, .08);
-  color: #fff;
+  border: 1px solid var(--tg-line-strong);
+  background: rgba(224, 201, 173, .12);
+  color: var(--tg-on-accent);
   font-size: 1.1rem;
   cursor: pointer;
 }
