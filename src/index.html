@@ -10,6 +10,19 @@
 </head>
 <body>
 
+<div class="tgate" id="tgate" hidden>
+  <div class="tgate-inner">
+    <div class="tgate-mark">★</div>
+    <h1 class="tgate-title">«Память Гродненщины»</h1>
+    <p class="tgate-text">
+      Это приложение работает внутри Telegram: здесь хранится ваш прогресс,
+      очки и фотографии, а также видна общая галерея участников.
+    </p>
+    <a class="btn btn-primary tgate-btn" id="tgateOpen" href="https://t.me/MemoryOfTheGrodnoRegion_bot?startapp">Открыть в Telegram</a>
+    <p class="tgate-hint">После открытия прогресс подтянется на это устройство автоматически.</p>
+  </div>
+</div>
+
 <header class="topbar">
   <div class="topbar-row">
     <div class="brand">
@@ -140,9 +153,25 @@
 
 <div class="toast" id="toast" hidden></div>
 
+<div class="sync-dot" id="syncDot" hidden>
+  <span id="syncText">Синхронизация</span>
+</div>
+
+<div class="lightbox" id="lightbox" hidden role="dialog" aria-modal="true" aria-label="Просмотр фотографии">
+  <button class="lightbox-close" id="lightboxClose" type="button" aria-label="Закрыть">✕</button>
+  <div>
+    <!-- Изображение создаётся только на время показа: постоянный <img> с
+         пустым src заставляет браузер повторно запрашивать саму страницу и
+         попадает в проверку битых картинок. -->
+    <div id="lightboxBody"></div>
+    <p class="lightbox-caption" id="lightboxCaption"></p>
+  </div>
+</div>
+
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script>/*{{LEAFLET_JS}}*/</script>
 <script>/*{{DATA}}*/</script>
+<script>/*{{CLOUD_JS}}*/</script>
 <script>/*{{APP_JS}}*/</script>
 </body>
 </html>

@@ -1119,6 +1119,130 @@ button { font: inherit; color: inherit; }
 }
 .toast.is-award { border-color: rgba(232, 182, 76, .55); color: var(--tg-gold); font-weight: 600; }
 
+/* --- Экран блокировки вне Telegram ------------------------------------ */
+.tgate {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: var(--tg-bg, #17212b);
+}
+.tgate[hidden] { display: none; }
+.tgate-inner { max-width: 380px; text-align: center; }
+.tgate-mark { font-size: 56px; color: var(--tg-gold, #e8b64c); line-height: 1; }
+.tgate-title { font-size: 1.4rem; margin: 12px 0 10px; }
+.tgate-text { color: var(--tg-muted, #9aa7b4); line-height: 1.55; margin: 0 0 22px; }
+.tgate-btn { display: inline-block; text-decoration: none; padding: 13px 22px; }
+.tgate-hint { color: var(--tg-muted, #9aa7b4); font-size: .82rem; margin-top: 16px; }
+
+/* Тело под замком не должно прокручиваться. */
+body.is-locked { overflow: hidden; }
+
+/* Под замком само приложение не показывается: пустая карта и пустые
+   списки выглядели бы как неисправность, а не как объяснение. */
+body.is-gated > .topbar,
+body.is-gated > main,
+body.is-gated > .sheet,
+body.is-gated > .toast,
+body.is-gated > .sync-dot { display: none; }
+
+/* --- Индикатор синхронизации ----------------------------------------- */
+.sync-dot {
+  position: fixed;
+  right: 12px;
+  bottom: 12px;
+  z-index: 1050;
+  display: none;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 11px;
+  border-radius: 999px;
+  font-size: .74rem;
+  background: var(--tg-surface-2);
+  border: 1px solid rgba(255, 255, 255, .14);
+  color: var(--tg-muted);
+  box-shadow: var(--shadow);
+}
+.sync-dot.is-visible { display: inline-flex; }
+.sync-dot.is-error { color: var(--tg-red); border-color: rgba(224, 108, 108, .4); }
+
+/* --- Галерея участников в карточке места ----------------------------- */
+.gallery { margin-top: 20px; padding-top: 16px; border-top: 1px solid rgba(255, 255, 255, .08); }
+.gallery[hidden] { display: none; }
+.gallery-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
+.gallery-title { font-weight: 600; font-size: .95rem; }
+.gallery-count { font-size: .78rem; color: var(--tg-muted); }
+.gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.gallery-item {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--tg-surface-2);
+  border: 1px solid rgba(255, 255, 255, .06);
+  cursor: zoom-in;
+  padding: 0;
+}
+.gallery-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.gallery-item.is-mine { border-color: rgba(232, 182, 76, .5); }
+.gallery-mine-tag {
+  position: absolute;
+  left: 5px;
+  bottom: 5px;
+  padding: 1px 6px;
+  border-radius: 6px;
+  font-size: .64rem;
+  background: rgba(0, 0, 0, .62);
+  color: var(--tg-gold);
+}
+.gallery-caption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 12px 6px 4px;
+  font-size: .68rem;
+  line-height: 1.25;
+  color: #fff;
+  background: linear-gradient(transparent, rgba(0, 0, 0, .78));
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.gallery-empty { color: var(--tg-muted); font-size: .84rem; }
+.gallery-note { color: var(--tg-muted); font-size: .8rem; margin-top: 10px; }
+.gallery-more { margin-top: 10px; }
+
+/* Просмотр фото во весь экран. */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 1300;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, .92);
+  padding: 16px;
+}
+.lightbox[hidden] { display: none; }
+.lightbox img { max-width: 100%; max-height: 82vh; border-radius: 12px; }
+.lightbox-caption { color: #dfe6ec; text-align: center; margin-top: 14px; max-width: 520px; line-height: 1.5; }
+.lightbox-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, .2);
+  background: rgba(255, 255, 255, .08);
+  color: #fff;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
 @media (min-width: 720px) {
   .view { max-width: 980px; margin: 0 auto; }
   .topbar { padding-left: max(16px, calc(50% - 490px)); padding-right: max(16px, calc(50% - 490px)); }
@@ -1137,6 +1261,19 @@ button { font: inherit; color: inherit; }
 </style>
 </head>
 <body>
+
+<div class="tgate" id="tgate" hidden>
+  <div class="tgate-inner">
+    <div class="tgate-mark">★</div>
+    <h1 class="tgate-title">«Память Гродненщины»</h1>
+    <p class="tgate-text">
+      Это приложение работает внутри Telegram: здесь хранится ваш прогресс,
+      очки и фотографии, а также видна общая галерея участников.
+    </p>
+    <a class="btn btn-primary tgate-btn" id="tgateOpen" href="https://t.me/MemoryOfTheGrodnoRegion_bot?startapp">Открыть в Telegram</a>
+    <p class="tgate-hint">После открытия прогресс подтянется на это устройство автоматически.</p>
+  </div>
+</div>
 
 <header class="topbar">
   <div class="topbar-row">
@@ -1268,6 +1405,21 @@ button { font: inherit; color: inherit; }
 
 <div class="toast" id="toast" hidden></div>
 
+<div class="sync-dot" id="syncDot" hidden>
+  <span id="syncText">Синхронизация</span>
+</div>
+
+<div class="lightbox" id="lightbox" hidden role="dialog" aria-modal="true" aria-label="Просмотр фотографии">
+  <button class="lightbox-close" id="lightboxClose" type="button" aria-label="Закрыть">✕</button>
+  <div>
+    <!-- Изображение создаётся только на время показа: постоянный <img> с
+         пустым src заставляет браузер повторно запрашивать саму страницу и
+         попадает в проверку битых картинок. -->
+    <div id="lightboxBody"></div>
+    <p class="lightbox-caption" id="lightboxCaption"></p>
+  </div>
+</div>
+
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script>/* @preserve
  * Leaflet 1.9.4, a JS library for interactive maps. https://leafletjs.com
@@ -1283,6 +1435,383 @@ window.PLACES = PLACES;
 window.QUESTIONS = QUESTIONS;
 window.PHOTOS = PHOTOS;
 window.PHOTO_CREDITS = PHOTO_CREDITS;</script>
+<script>// Синхронизация с сервером.
+//
+// Модуль сознательно ничего не знает про очки, значки и разметку: он умеет
+// читать и писать состояние, галерею и байты фотографий, а решение о том,
+// когда и что показывать, принимает приложение через переданные обработчики.
+//
+// Ключевые свойства:
+//   * initData передаётся только в заголовке и никогда не пишется в localStorage;
+//   * прогресс монотонен, поэтому локальное и серверное состояния объединяются
+//     как объединение, а не перетирают друг друга;
+//   * неудачные записи не теряются: состояние помечается грязным и уходит
+//     повторно при появлении сети и по таймеру;
+//   * без Telegram initData модуль полностью выключается и не мешает работе.
+
+(function (global) {
+  "use strict";
+
+  // Адрес API задаётся здесь и может быть переопределён через
+  // window.CLOUD_API_BASE до загрузки модуля — это нужно автотестам и
+  // локальному стенду. На безопасность не влияет: подпись initData в
+  // любом случае проверяется на сервере токеном бота.
+  var API_BASE = global.CLOUD_API_BASE ||
+    "https://patriot-grodno-api.patriot-grodno.workers.dev";
+  var SAVE_DEBOUNCE_MS = 30000;
+  var RETRY_MS = 60000;
+  var REQUEST_TIMEOUT_MS = 20000;
+  // Один пользователь не может иметь больше фото, чем мест в приложении,
+  // но запас нужен на случай расширения каталога.
+  var MAX_OWN_PHOTOS = 40;
+  // Верхняя граница выборки галереи совпадает с лимитом фото на сервере:
+  // список метаданных небольшой, а постраничные запросы на мобильном
+  // интернете обходятся дороже одного полного ответа.
+  var GALLERY_FETCH_LIMIT = 400;
+
+  function initData() {
+    try {
+      var api = global.Telegram && global.Telegram.WebApp;
+      return (api && api.initData) || "";
+    } catch (err) {
+      return "";
+    }
+  }
+
+  // Синхронизация включается только в Telegram: вне его нет initData,
+  // подписанного токеном бота, и сервер всё равно откажет в каждом запросе.
+  function isEnabled() {
+    return Boolean(initData());
+  }
+
+  function url(path) {
+    return API_BASE + path;
+  }
+
+  function request(path, options) {
+    var settings = options || {};
+    var headers = { "X-Telegram-Init-Data": initData() };
+    if (settings.json !== undefined) {
+      headers["Content-Type"] = "application/json";
+      settings.body = JSON.stringify(settings.json);
+    }
+    if (settings.headers) {
+      Object.keys(settings.headers).forEach(function (key) { headers[key] = settings.headers[key]; });
+    }
+
+    // Таймаут обязателен: в Telegram «висящий» fetch оставляет кнопки
+    // заблокированными, и пользователь не понимает, что происходит.
+    var controller = typeof AbortController === "function" ? new AbortController() : null;
+    var timer = setTimeout(function () { if (controller) controller.abort(); }, REQUEST_TIMEOUT_MS);
+
+    return fetch(url(path), {
+      method: settings.method || "GET",
+      headers: headers,
+      body: settings.body,
+      signal: controller ? controller.signal : undefined,
+      cache: "no-store",
+      // keepalive позволяет запросу пережить закрытие страницы: без него
+      // последние очки, отмеченные перед уходом из Telegram, могли бы
+      // не дойти до сервера.
+      keepalive: Boolean(settings.keepalive),
+    }).then(function (response) {
+      clearTimeout(timer);
+      if (!response.ok) {
+        return response.json().catch(function () { return {}; }).then(function (body) {
+          var error = new Error(body.error || ("HTTP " + response.status));
+          error.status = response.status;
+          error.code = body.error;
+          throw error;
+        });
+      }
+      return response;
+    }, function (err) {
+      clearTimeout(timer);
+      throw err;
+    });
+  }
+
+  function readJson(response) {
+    return response.json().catch(function () { return {}; });
+  }
+
+  // --- Очередь отправки -------------------------------------------------
+  //
+  // Одно поле dirty вместо очереди запросов: состояние монотонно, поэтому
+  // достаточно отправить последнюю версию, а не историю изменений.
+
+  var queue = {
+    dirty: false,
+    saving: false,
+    // Счётчик правок: он позволяет отличить «состояние не менялось во
+    // время отправки» от «менялось» и не потерять последние изменения.
+    rev: 0,
+    timer: null,
+    retryTimer: null,
+    getState: null,
+    onSynced: null,
+    onStatus: null,
+    lastError: null,
+  };
+
+  function setStatus(state, detail) {
+    if (queue.onStatus) queue.onStatus(state, detail);
+  }
+
+  function payload() {
+    if (!queue.getState) return null;
+    var snapshot = queue.getState();
+    if (!snapshot) return null;
+    return {
+      state: {
+        visited: snapshot.visited || {},
+        correct: snapshot.correct || {},
+        badges: snapshot.badges || {},
+      },
+    };
+  }
+
+  function clearTimers() {
+    if (queue.timer) { clearTimeout(queue.timer); queue.timer = null; }
+    if (queue.retryTimer) { clearTimeout(queue.retryTimer); queue.retryTimer = null; }
+  }
+
+  function scheduleRetry() {
+    if (queue.retryTimer || !queue.dirty) return;
+    queue.retryTimer = setTimeout(function () {
+      queue.retryTimer = null;
+      flush();
+    }, RETRY_MS);
+  }
+
+  function flush(keepalive) {
+    if (!isEnabled() || !queue.dirty || queue.saving) return Promise.resolve();
+    var body = payload();
+    if (!body) return Promise.resolve();
+
+    var revAtStart = queue.rev;
+    queue.saving = true;
+    setStatus("sync");
+
+    return request("/api/state", { method: "POST", json: body, keepalive: Boolean(keepalive) })
+      .then(readJson)
+      .then(function (data) {
+        queue.saving = false;
+        queue.lastError = null;
+        if (queue.retryTimer) { clearTimeout(queue.retryTimer); queue.retryTimer = null; }
+        setStatus("ok");
+        if (queue.onSynced && data.state) queue.onSynced(data.state);
+        if (queue.rev === revAtStart) {
+          // Во время отправки ничего не меняли — очередь чиста.
+          queue.dirty = false;
+        } else {
+          // Прогресс изменился, пока летел запрос: снимок устарел, и
+          // последние правки нужно отправить следом. Иначе они ждали бы
+          // следующего изменения или сетевой ошибки.
+          markDirty(true);
+        }
+        return data;
+      })
+      .catch(function (err) {
+        queue.saving = false;
+        queue.lastError = err;
+        // Грязный флаг сохраняется: прогресс не потеряется и уйдёт позже.
+        setStatus("error", err);
+        scheduleRetry();
+        return null;
+      });
+  }
+
+  // Пометить состояние как несохранённое и запланировать отправку.
+  function markDirty(immediate) {
+    if (!isEnabled()) return;
+    queue.dirty = true;
+    queue.rev += 1;
+    if (queue.timer) clearTimeout(queue.timer);
+    if (immediate) {
+      queue.timer = setTimeout(function () { queue.timer = null; flush(); }, 0);
+      return;
+    }
+    queue.timer = setTimeout(function () { queue.timer = null; flush(); }, SAVE_DEBOUNCE_MS);
+  }
+
+  function isPending() {
+    return queue.dirty || queue.saving;
+  }
+
+  // --- Приём состояния --------------------------------------------------
+
+  // Локальное и серверное объединяются как объединение: прогресс не уменьшается,
+  // поэтому слияние безопасно в обе стороны и не теряет очки на разных устройствах.
+  function mergeMaps(into, from) {
+    var out = {};
+    var key;
+    for (key in into) {
+      if (Object.prototype.hasOwnProperty.call(into, key) && into[key]) out[key] = into[key];
+    }
+    for (key in from) {
+      if (Object.prototype.hasOwnProperty.call(from, key) && from[key]) out[key] = from[key];
+    }
+    return out;
+  }
+
+  function start(options) {
+    var settings = options || {};
+    queue.getState = settings.getState || null;
+    queue.onSynced = settings.onSynced || null;
+    queue.onStatus = settings.onStatus || null;
+
+    if (!isEnabled()) {
+      setStatus("off");
+      return Promise.resolve(null);
+    }
+
+    // Возврат в сеть — повод немедленно отдать накопленное.
+    global.addEventListener("online", function () {
+      if (queue.dirty) markDirty(true);
+    });
+    if (typeof document !== "undefined") {
+      document.addEventListener("visibilitychange", function () {
+        if (document.hidden) {
+          // Уход в фон: отправляем с keepalive, чтобы запрос пережил
+          // закрытие Mini App.
+          if (queue.dirty) flush(true);
+          return;
+        }
+        // Уход из фона на мобильных часто означает смену сети.
+        if (queue.dirty) markDirty(true);
+      });
+    }
+    global.addEventListener("pagehide", function () {
+      if (queue.dirty) flush(true);
+    });
+
+    return request("/api/state", { method: "GET" })
+      .then(readJson)
+      .then(function (data) {
+        setStatus("ok");
+        if (queue.onSynced && data.state) queue.onSynced(data.state);
+        return data.state || null;
+      })
+      .catch(function (err) {
+        // Нет сети или сервер недоступен — приложение продолжает работать
+        // на локальных данных, это штатная ситуация, а не поломка.
+        setStatus("error", err);
+        return null;
+      });
+  }
+
+  // --- Сброс ------------------------------------------------------------
+
+  function reset() {
+    clearTimers();
+    queue.dirty = false;
+    // Сброс — это изменение состояния: счётчик правок двигается, чтобы
+    // в-flight запрос не счёл его устаревшим снимком.
+    queue.rev += 1;
+    if (!isEnabled()) return Promise.resolve(null);
+    return request("/api/state", { method: "POST", json: { reset: true } })
+      .then(readJson)
+      .then(function (data) {
+        setStatus("ok");
+        return data.state || null;
+      })
+      .catch(function (err) {
+        setStatus("error", err);
+        return null;
+      });
+  }
+
+  // --- Галерея и фотографии --------------------------------------------
+
+  // Сервер хранит не больше MAX_PHOTOS снимков на всех, поэтому список
+  // метаданных запрашивается целиком: постраничный обмен с сервером на
+  // телефоне дороже, чем один ответ. Показ порциями — уже на клиенте.
+  function gallery(placeId) {
+    if (!isEnabled()) return Promise.resolve(null);
+    var path = "/api/gallery?limit=" + GALLERY_FETCH_LIMIT +
+      (placeId ? "&placeId=" + encodeURIComponent(placeId) : "");
+    return request(path, { method: "GET" }).then(readJson).catch(function (err) {
+      setStatus("error", err);
+      return null;
+    });
+  }
+
+  function uploadPhoto(placeId, blob, caption) {
+    if (!isEnabled()) return Promise.resolve(null);
+    var form = new FormData();
+    form.append("photo", blob, "photo.jpg");
+    var path = "/api/photos?placeId=" + encodeURIComponent(placeId);
+    if (caption) path += "&caption=" + encodeURIComponent(caption);
+    return request(path, { method: "POST", body: form }).then(readJson).then(function (data) {
+      setStatus("ok");
+      return data.entry || null;
+    });
+  }
+
+  function deletePhoto(entryId) {
+    if (!isEnabled()) return Promise.resolve(true);
+    return request("/api/photos/" + encodeURIComponent(entryId), { method: "DELETE" })
+      .then(readJson)
+      .then(function () { setStatus("ok"); return true; })
+      .catch(function (err) {
+        setStatus("error", err);
+        return false;
+      });
+  }
+
+  // Байты фотографии: обычный <img src> не годится, потому что запрос
+  // требует заголовок с initData. Файл скачивается и показывается через
+  // object URL.
+  function fetchPhoto(entryId) {
+    if (!isEnabled()) return Promise.resolve(null);
+    return request("/api/photos/" + encodeURIComponent(entryId), { method: "GET" })
+      .then(function (response) { return response.blob(); })
+      .catch(function () { return null; });
+  }
+
+  // Восстановление своих фотографий на новом устройстве. Файлы скачиваются
+  // по одному и только те, которых ещё нет локально.
+  function restorePhotos(ownPhotos, hasLocal, storeLocal) {
+    if (!isEnabled()) return Promise.resolve(0);
+    var queueList = Object.keys(ownPhotos || {}).slice(0, MAX_OWN_PHOTOS);
+    var restored = 0;
+
+    var step = function (index) {
+      if (index >= queueList.length) return Promise.resolve(restored);
+      var placeId = queueList[index];
+      var entryId = ownPhotos[placeId];
+      if (hasLocal(placeId)) return step(index + 1);
+      return fetchPhoto(entryId).then(function (blob) {
+        if (blob && blob.size) {
+          return Promise.resolve(storeLocal(placeId, blob)).then(function () {
+            restored += 1;
+          }).catch(function () {});
+        }
+        return null;
+      }).then(function () { return step(index + 1); });
+    };
+
+    return step(0);
+  }
+
+  global.Cloud = {
+    API_BASE: API_BASE,
+    isEnabled: isEnabled,
+    start: start,
+    reset: reset,
+    markDirty: markDirty,
+    flush: flush,
+    isPending: isPending,
+    gallery: gallery,
+    uploadPhoto: uploadPhoto,
+    deletePhoto: deletePhoto,
+    fetchPhoto: fetchPhoto,
+    restorePhotos: restorePhotos,
+    mergeMaps: mergeMaps,
+  };
+})(window);
+</script>
 <script>(function () {
   "use strict";
 
@@ -1292,11 +1821,23 @@ window.PHOTO_CREDITS = PHOTO_CREDITS;</script>
   var POINTS = { visit: 10, quiz: 15, photo: 20 };
   var FORT_TYPE = "фортификация";
 
+  // Общая галерея показывает кадр достаточно крупным, поэтому фото
+  // уменьшается до 1280 px по большей стороне. Сервер принимает до 3 МБ,
+  // этого хватает с запасом.
+  var PHOTO_MAX_SIDE = 1280;
+  var PHOTO_QUALITY = 0.82;
+
   var state = {
     visited: {},
     photos: {},
     correct: {},
-    badges: {}
+    badges: {},
+    // photoIds: место → id своей записи в серверной галерее. Нужны, чтобы
+    // отличить своё фото в общей галерее и удалить его с сервера.
+    // pendingDeletes: id фото, удалённых офлайн и ждущих сети.
+    // Оба поля живут только на устройстве и на сервер не отправляются.
+    photoIds: {},
+    pendingDeletes: []
   };
 
   var places = [];
@@ -1329,7 +1870,9 @@ window.PHOTO_CREDITS = PHOTO_CREDITS;</script>
       "finishRestart", "passportRank", "passportSub", "passportFill",
       "statVisited", "statQuiz", "statPhotos", "statBadges", "badges",
       "sources", "shareBtn", "resetProgress", "sheet", "sheetBackdrop",
-      "sheetClose", "sheetBody", "toast", "sheetPanel"
+      "sheetClose", "sheetBody", "toast", "sheetPanel",
+      "syncDot", "syncText", "lightbox", "lightboxBody",
+      "lightboxCaption", "lightboxClose"
     ].forEach(function (id) { el[id] = $(id); });
   }
 
@@ -1339,7 +1882,11 @@ window.PHOTO_CREDITS = PHOTO_CREDITS;</script>
       if (!raw) return;
       var saved = JSON.parse(raw);
       Object.keys(state).forEach(function (key) {
-        if (saved[key] && typeof saved[key] === "object") state[key] = saved[key];
+        if (!saved[key] || typeof saved[key] !== "object") return;
+        // Массив ожидается массивом, карта — картой: иначе полезшие в
+        // localStorage данные другого формата сломали бы цикл удаления.
+        if (Array.isArray(state[key]) !== Array.isArray(saved[key])) return;
+        state[key] = saved[key];
       });
     } catch (err) {
       storageAvailable = false;
@@ -1348,13 +1895,20 @@ window.PHOTO_CREDITS = PHOTO_CREDITS;</script>
 
   var storageAvailable = true;
 
-  function saveState() {
+  function persistLocal() {
     if (!storageAvailable) return;
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     } catch (err) {
       storageAvailable = false;
     }
+  }
+
+  function saveState(immediate) {
+    persistLocal();
+    // Локальная запись не зависит от сети: если сервер недоступен,
+    // изменения останутся грязными и уйдут при следующей попытке.
+    if (window.Cloud) window.Cloud.markDirty(immediate);
   }
 
   function tg() {
@@ -1749,10 +2303,14 @@ window.PHOTO_CREDITS = PHOTO_CREDITS;</script>
     document.body.style.overflow = "";
     activeId = null;
     setBackButton(false);
+    releaseSheetUrls();
     Object.keys(markers).forEach(refreshMarker);
   }
 
   function renderSheet(place) {
+    // Прежнее содержимое карточки заменяется целиком, поэтому его кадры
+    // больше не нужны и под них освобождается память.
+    releaseSheetUrls();
     var isVisited = Boolean(state.visited[place.id]);
     var tags = [
       '<span class="tag">' + escapeHtml(place.district) + "</span>",
@@ -1774,6 +2332,7 @@ window.PHOTO_CREDITS = PHOTO_CREDITS;</script>
       '<p class="card-full">' + escapeHtml(place.full) + "</p>" +
       '<div class="card-address">' + escapeHtml(place.address || place.district) + "</div>" +
       ownPhoto +
+      galleryBlock(place) +
       '<div class="card-actions">' +
       '<button class="btn ' + (isVisited ? "btn-ghost" : "btn-primary") + '" id="visitBtn" type="button">' +
       (isVisited ? "✓ Вы здесь были" : "Я здесь — " + POINTS.visit + " очков") + "</button>" +
@@ -1794,15 +2353,223 @@ window.PHOTO_CREDITS = PHOTO_CREDITS;</script>
     var deletePhotoBtn = $("deletePhotoBtn");
     if (deletePhotoBtn) deletePhotoBtn.addEventListener("click", function () { deletePhoto(place.id); });
 
+    var galleryMore = $("galleryMore");
+    if (galleryMore) {
+      galleryMore.addEventListener("click", function () { showMoreGallery(place.id); });
+    }
+
     var own = $("ownPhoto");
     if (own) {
       loadPhoto(place.id).then(function (blob) {
         if (!blob) return;
-        own.src = URL.createObjectURL(blob);
+        own.src = trackSheetUrl(URL.createObjectURL(blob));
         applyPhotoFit(own);
       });
     }
     applyPhotoFit(el.sheetBody.querySelector(".card-photo[data-fit]"));
+    loadGallery(place.id);
+  }
+
+  function galleryBlock(place) {
+    // Галерея — витрина общих фотографий. Свое фото показывается отдельно
+    // выше, поэтому в общей сетке его не дублируем.
+    return '<div class="gallery" id="gallery" data-place="' + escapeHtml(place.id) + '">' +
+      '<div class="gallery-head">' +
+      '<span class="gallery-title">Фото участников</span>' +
+      '<span class="gallery-count" id="galleryCount"></span>' +
+      "</div>" +
+      '<div class="gallery-grid" id="galleryGrid">' +
+      '<p class="gallery-empty">Загружаем фотографии…</p>' +
+      "</div>" +
+      '<button class="btn btn-ghost gallery-more" id="galleryMore" type="button" hidden>Показать ещё</button>' +
+      '<p class="gallery-note" id="galleryNote" hidden></p>' +
+      "</div>";
+  }
+
+  // Список мест, для которых галерея уже загружалась: при каждом открытии
+  // карточки перезапрашивать её не нужно, иначе тратится лимит запросов.
+  var galleryCache = {};
+  var GALLERY_PAGE = 24;
+
+  function loadGallery(placeId) {
+    var box = $("gallery");
+    if (!box || !window.Cloud || !window.Cloud.isEnabled()) {
+      if (box) {
+        box.hidden = true;
+      }
+      return;
+    }
+    box.hidden = false;
+    var cached = galleryCache[placeId];
+    if (cached) {
+      renderGallery(placeId, cached.shown, cached.total, cached.mine);
+      loadGalleryImages(placeId, cached.shown);
+      return;
+    }
+    window.Cloud.gallery(placeId).then(function (data) {
+      if (!data) {
+        var grid = $("galleryGrid");
+        var note = $("galleryNote");
+        if (grid) grid.innerHTML = "";
+        if (note) {
+          note.textContent = "Общая галерея сейчас недоступна.";
+          note.hidden = false;
+        }
+        return;
+      }
+      // С сервера приходит весь список: показ порциями делается на
+      // устройстве, поэтому «Показать ещё» не требует нового запроса.
+      var all = (data.entries || []).slice();
+      var mine = (data.canDelete || []).slice();
+      var total = data.total || all.length;
+      var shown = all.slice(0, GALLERY_PAGE);
+      galleryCache[placeId] = {
+        all: all, shown: shown, mine: mine, total: total,
+      };
+      renderGallery(placeId, shown, total, mine);
+      loadGalleryImages(placeId, shown);
+    });
+  }
+
+  // Показать следующую порцию уже загруженного списка.
+  function showMoreGallery(placeId) {
+    var cached = galleryCache[placeId];
+    if (!cached) return;
+    var before = cached.shown.length;
+    cached.shown = cached.all.slice(0, before + GALLERY_PAGE);
+    renderGallery(placeId, cached.shown, cached.total, cached.mine);
+    // Новые слоты появились в свежей разметке, грузим только их.
+    loadGalleryImages(placeId, cached.shown.slice(before));
+  }
+
+  // После загрузки или удаления своего фото список на сервере меняется, и
+  // старый кэш показывал бы устаревший счётчик.
+  function invalidateGallery(placeId) {
+    delete galleryCache[placeId];
+  }
+
+  function renderGallery(placeId, entries, total, mine) {
+    var grid = $("galleryGrid");
+    var count = $("galleryCount");
+    var more = $("galleryMore");
+    if (!grid) return;
+
+    // Своё фото живёт выше по карточке, в общей сетке оно лишнее.
+    var visible = entries.filter(function (entry) {
+      return mine.indexOf(entry.id) < 0;
+    });
+    // total считает все снимки места, включая собственный, поэтому
+    // чужих фото чуть меньше — иначе счётчик врёт на единицу.
+    var othersTotal = Math.max(total - mine.length, 0);
+    var hidden = othersTotal - visible.length;
+
+    if (count) {
+      if (!othersTotal) {
+        count.textContent = "";
+      } else if (hidden > 0) {
+        count.textContent = visible.length + " из " + othersTotal + " фото";
+      } else {
+        count.textContent = othersTotal + " фото";
+      }
+    }
+    if (!visible.length) {
+      grid.innerHTML = total
+        ? '<p class="gallery-empty">Здесь пока нет фотографий от других участников.</p>'
+        : '<p class="gallery-empty">Будьте первым, кто добавит фото этого места.</p>';
+    } else {
+      grid.innerHTML = visible.map(function (entry) {
+        return '<button class="gallery-item" type="button" data-entry="' + escapeHtml(entry.id) +
+          '" data-caption="' + escapeHtml(entry.caption || "") + '">' +
+          '<span class="gallery-photo" data-entry="' + escapeHtml(entry.id) + '"></span>' +
+          (entry.caption ? '<span class="gallery-caption">' + escapeHtml(entry.caption) + "</span>" : "") +
+          "</button>";
+      }).join("");
+    }
+    // Кнопка нужна, только если в уже загруженном списке есть ещё кадры.
+    if (more) more.hidden = !(hidden > 0);
+  }
+
+  // Фотографии грузятся отдельными запросами с initData, поэтому обычный
+  // <img src="..."> не подходит: картинки собираются через blob и
+  // подставляются после загрузки.
+  function loadGalleryImages(placeId, entries) {
+    entries.forEach(function (entry) {
+      var slot = document.querySelector('.gallery-photo[data-entry="' + cssEscape(entry.id) + '"]');
+      if (!slot || slot.dataset.loaded) return;
+      slot.dataset.loaded = "1";
+      window.Cloud.fetchPhoto(entry.id).then(function (blob) {
+        if (!blob) {
+          slot.textContent = "";
+          return;
+        }
+        var img = document.createElement("img");
+        img.loading = "lazy";
+        img.alt = entry.caption || "Фото участника";
+        img.src = trackSheetUrl(URL.createObjectURL(blob));
+        slot.appendChild(img);
+      });
+    });
+  }
+
+  // Атрибут data-entry используется в селекторе, поэтому значение нужно
+  // экранировать для CSS.
+  function cssEscape(value) {
+    if (window.CSS && window.CSS.escape) return window.CSS.escape(value);
+    return String(value).replace(/["\\]/g, "\\$&");
+  }
+
+  // Фотографии показываются через object URL, поэтому их нужно вовремя
+  // освобождать: иначе память телефона забивается кадрами при каждом
+  // открытии карточки. Учётчика два: карточка и просмотрщик живут
+  // независимо, и закрытие просмотрщика не должно гасить кадры в карточке.
+  var sheetUrls = [];
+  var lightboxUrl = "";
+
+  function trackSheetUrl(url) {
+    sheetUrls.push(url);
+    return url;
+  }
+
+  function releaseSheetUrls() {
+    sheetUrls.forEach(function (url) {
+      try { URL.revokeObjectURL(url); } catch (err) {}
+    });
+    sheetUrls = [];
+  }
+
+  function openLightbox(entryId, caption) {
+    if (!el.lightbox) return;
+    el.lightboxBody.innerHTML = "";
+    if (lightboxUrl) {
+      try { URL.revokeObjectURL(lightboxUrl); } catch (err) {}
+      lightboxUrl = "";
+    }
+    el.lightboxCaption.textContent = caption || "";
+    el.lightbox.hidden = false;
+    window.Cloud.fetchPhoto(entryId).then(function (blob) {
+      // Просмотрщик могли закрыть, пока шла загрузка.
+      if (el.lightbox.hidden) return;
+      if (!blob) {
+        closeLightbox();
+        return;
+      }
+      var img = document.createElement("img");
+      img.alt = caption || "Фотография участника";
+      lightboxUrl = URL.createObjectURL(blob);
+      img.src = lightboxUrl;
+      el.lightboxBody.appendChild(img);
+    });
+  }
+
+  function closeLightbox() {
+    if (!el.lightbox || el.lightbox.hidden) return;
+    el.lightbox.hidden = true;
+    el.lightboxBody.innerHTML = "";
+    el.lightboxCaption.textContent = "";
+    if (lightboxUrl) {
+      try { URL.revokeObjectURL(lightboxUrl); } catch (err) {}
+      lightboxUrl = "";
+    }
   }
 
   function markVisited(id) {
@@ -1839,34 +2606,96 @@ window.PHOTO_CREDITS = PHOTO_CREDITS;</script>
   }
 
   function savePhoto(id, file) {
-    resizeImage(file, 480, 0.78).then(function (blob) {
-      return savePhotoBlob(id, blob);
-    }).then(function () {
+    toast("Обрабатываю фото…");
+    resizeImage(file, PHOTO_MAX_SIDE, PHOTO_QUALITY).then(function (blob) {
+      return savePhotoBlob(id, blob).then(function () { return blob; });
+    }).then(function (blob) {
       state.photos[id] = true;
-      saveState();
+      delete state.photoIds[id];
+      saveState(true);
       haptic("success");
       toast("Фото сохранено, +" + POINTS.photo + " очков", true);
       updateStats();
       renderSheet(placeById(id));
       checkBadges();
+      // Загрузка на сервер идёт после показа результата: медленная сеть
+      // не должна заставлять ждать подтверждения, что фото сохранено.
+      uploadToCloud(id, blob);
     }).catch(function () {
       toast("Не удалось обработать фото");
     });
   }
 
+  function uploadToCloud(id, blob) {
+    if (!window.Cloud || !window.Cloud.isEnabled()) return;
+    window.Cloud.uploadPhoto(id, blob).then(function (entry) {
+      if (!entry) {
+        toast("Фото сохранено на устройстве, но не отправлено в общую галерею");
+        return;
+      }
+      state.photoIds[id] = entry.id;
+      // Успешная отправка снимает отложенное удаление этого места.
+      state.pendingDeletes = (state.pendingDeletes || []).filter(function (value) {
+        return value !== entry.id;
+      });
+      saveState();
+      // Общий список изменился: своё фото появилось в галерее, старый
+      // счётчик и кнопка удаления были бы неверны. Кэш сбрасывается до
+      // перерисовки карточки.
+      invalidateGallery(id);
+      if (el.sheet.hidden !== false) renderSheet(placeById(id));
+    });
+  }
+
   function deletePhoto(id) {
     if (!window.confirm("Удалить своё фото? " + POINTS.photo + " очков будет снято.")) return;
+    var entryId = state.photoIds[id];
     deletePhotoBlob(id).then(function () {
       delete state.photos[id];
-      saveState();
+      delete state.photoIds[id];
       haptic("warning");
       toast("Фото удалено, −" + POINTS.photo + " очков");
       updateStats();
       renderList();
+      // Снимка в общей галерее больше нет: кэш сбрасывается до перерисовки
+      // карточки, иначе она успела бы показать устаревшую сетку.
+      invalidateGallery(id);
       renderSheet(placeById(id));
       checkBadges();
+      if (window.Cloud && window.Cloud.isEnabled() && entryId) {
+        window.Cloud.deletePhoto(entryId).then(function (ok) {
+          if (ok) {
+            saveState(true);
+            return;
+          }
+          // Сеть пропала в момент удаления: Remember, чтобы повторить.
+          state.pendingDeletes = (state.pendingDeletes || []).concat([entryId]);
+          saveState();
+        });
+      } else {
+        saveState(true);
+      }
     }).catch(function () {
       toast("Не удалось удалить фото");
+    });
+  }
+
+  // Повторная отправка отложенных удалений после появления сети.
+  function flushPendingDeletes() {
+    var pending = state.pendingDeletes || [];
+    if (!pending.length || !window.Cloud || !window.Cloud.isEnabled()) return;
+    var rest = pending.slice();
+    var chain = Promise.resolve();
+    rest.forEach(function (entryId) {
+      chain = chain.then(function () {
+        return window.Cloud.deletePhoto(entryId).then(function (ok) {
+          if (ok) rest = rest.filter(function (value) { return value !== entryId; });
+        });
+      });
+    });
+    chain.then(function () {
+      state.pendingDeletes = rest;
+      saveState();
     });
   }
 
@@ -2120,12 +2949,27 @@ window.PHOTO_CREDITS = PHOTO_CREDITS;</script>
   }
 
   function resetProgress() {
-    if (!window.confirm("Сбросить весь прогресс, очки и значки? Фото останутся на устройстве.")) return;
+    if (!window.confirm("Сбросить прогресс, очки за посещения и викторину и значки? Загруженные фото и очки за них сохранятся.")) return;
     state.visited = {};
-    state.photos = {};
     state.correct = {};
     state.badges = {};
-    saveState();
+    // Фото не трогаем: это содержимое пользователя, а не прогресс. Если
+    // стереть и photos, то сервер вернёт их из ownPhotos при следующей
+    // синхронизации и сброс ничего бы не значил.
+    saveState(true);
+    // Сервер тоже должен забыть прогресс, иначе следующая синхронизация
+    // вернёт его обратно на только что очищенное устройство.
+    if (window.Cloud && window.Cloud.isEnabled()) {
+      window.Cloud.reset().then(function (remote) {
+        if (remote) applyRemoteState(remote);
+        flushPendingDeletes();
+        updateStats();
+        renderList();
+        Object.keys(markers).forEach(refreshMarker);
+        toast("Прогресс сброшен");
+      });
+      return;
+    }
     updateStats();
     renderList();
     Object.keys(markers).forEach(refreshMarker);
@@ -2171,13 +3015,30 @@ window.PHOTO_CREDITS = PHOTO_CREDITS;</script>
     el.sheetClose.addEventListener("click", closeSheet);
     el.sheetBody.addEventListener("click", function (event) {
       var link = event.target.closest(".card-credit-link");
-      if (!link) return;
-      event.preventDefault();
-      event.stopPropagation();
-      if (link.dataset.url) openExternalLink(link.dataset.url);
+      if (link) {
+        event.preventDefault();
+        event.stopPropagation();
+        if (link.dataset.url) openExternalLink(link.dataset.url);
+        return;
+      }
+      var item = event.target.closest(".gallery-item");
+      if (item && item.dataset.entry) openLightbox(item.dataset.entry, item.dataset.caption);
     });
+
+    if (el.lightboxClose) el.lightboxClose.addEventListener("click", closeLightbox);
+    if (el.lightbox) {
+      el.lightbox.addEventListener("click", function (event) {
+        if (event.target === el.lightbox) closeLightbox();
+      });
+    }
+
     document.addEventListener("keydown", function (event) {
-      if (event.key === "Escape" && !el.sheet.hidden) closeSheet();
+      if (event.key !== "Escape") return;
+      if (el.lightbox && !el.lightbox.hidden) {
+        closeLightbox();
+        return;
+      }
+      if (!el.sheet.hidden) closeSheet();
     });
 
     el.quizNext.addEventListener("click", function () {
@@ -2209,7 +3070,136 @@ window.PHOTO_CREDITS = PHOTO_CREDITS;</script>
     });
   }
 
+  // Приложение рассчитано на Telegram: вне его нет initData, поэтому
+  // сервер не примет ни прогресс, ни фотографии, а прогресс на устройстве
+  // не будет переноситься на другие устройства. Показываем честный
+  // экран-заглушку вместо приложения, которое всё равно не работает.
+  //
+  // Служебный параметр nogate=1 снимает замок: он нужен автотестам и
+  // локальной проверке в браузере. На серверной логике он не влияет —
+  // запросы без initData сервер отклоняет в любом случае.
+  function telegramGatePassed() {
+    var api = window.Telegram && window.Telegram.WebApp;
+    if (api && api.initData) return true;
+    try {
+      if (/(^|[?&])nogate=1(&|$)/.test(window.location.search)) return true;
+    } catch (err) {}
+    return false;
+  }
+
+  function showGate() {
+    var gate = $("tgate");
+    if (gate) gate.hidden = false;
+    document.body.classList.add("is-gated", "is-locked");
+  }
+
+  var SYNC_TEXT = {
+    off: "",
+    sync: "Сохраняю…",
+    ok: "",
+    error: "Нет сети — сохраню позже"
+  };
+
+  function showSyncStatus(status) {
+    if (!el.syncDot) return;
+    if (status === "off" || status === "ok") {
+      el.syncDot.hidden = true;
+      el.syncDot.classList.remove("is-error");
+      return;
+    }
+    el.syncDot.hidden = false;
+    el.syncText.textContent = SYNC_TEXT[status] || "";
+    el.syncDot.classList.toggle("is-error", status === "error");
+  }
+
+  // Прогресс, очки и фото с сервера накладываются на локальные, а не
+  // заменяют их: слияние монотонно, поэтому ни одна сторона не теряет
+  // накопленное.
+  function applyRemoteState(remote) {
+    if (!remote) return false;
+    var before = JSON.stringify(state.visited) + JSON.stringify(state.correct) +
+      JSON.stringify(state.badges) + JSON.stringify(state.photos);
+    state.visited = window.Cloud.mergeMaps(state.visited, remote.visited);
+    state.correct = window.Cloud.mergeMaps(state.correct, remote.correct);
+    state.badges = window.Cloud.mergeMaps(state.badges, remote.badges);
+    // Свои фото на сервере — источник истины: если фото там есть, а
+    // локально файла нет, значит это новое устройство.
+    var own = remote.ownPhotos || {};
+    Object.keys(own).forEach(function (placeId) {
+      state.photoIds[placeId] = own[placeId];
+      state.photos[placeId] = true;
+    });
+    var after = JSON.stringify(state.visited) + JSON.stringify(state.correct) +
+      JSON.stringify(state.badges) + JSON.stringify(state.photos);
+    return before !== after;
+  }
+
+  function startCloud() {
+    if (!window.Cloud) return;
+    window.Cloud.start({
+      getState: function () { return state; },
+      onSynced: function (remote) {
+        var changed = applyRemoteState(remote);
+        // Только локальная запись: ответ сервера не является новым
+        // изменением. Иначе каждый успешный ответ помечал бы состояние
+        // грязным заново и приложение слало бы бесконечный поток POST.
+        persistLocal();
+        if (changed) {
+          updateStats();
+          renderList();
+          Object.keys(markers).forEach(refreshMarker);
+          if (!el.sheet.hidden && activeId) renderSheet(placeById(activeId));
+        }
+        flushPendingDeletes();
+        restoreOwnPhotos(remote.ownPhotos || {});
+      },
+      onStatus: showSyncStatus
+    });
+  }
+
+  // На новом устройстве своих фотографий в IndexedDB ещё нет, поэтому
+  // файлы скачиваются с сервера в фоне.
+  function restoreOwnPhotos(ownPhotos) {
+    if (!window.Cloud || !window.Cloud.isEnabled()) return;
+    window.Cloud.restorePhotos(ownPhotos, function (placeId) {
+      return state.photos[placeId] && Boolean(localPhotoCache[placeId]);
+    }, function (placeId, blob) {
+      return savePhotoBlob(placeId, blob).then(function () {
+        localPhotoCache[placeId] = true;
+      });
+    }).then(function (count) {
+      if (!count) return;
+      renderList();
+      if (!el.sheet.hidden && activeId) renderSheet(placeById(activeId));
+    });
+  }
+
+  // Отметка «фото уже лежит в IndexedDB», чтобы восстановление не качало
+  // одни и те же файлы при каждом запуске.
+  var localPhotoCache = {};
+
+  function primeLocalPhotoCache() {
+    if (!window.indexedDB) return Promise.resolve();
+    return openDb().then(function (db) {
+      return new Promise(function (resolve) {
+        var tx = db.transaction("photos", "readonly");
+        var request = tx.objectStore("photos").getAllKeys();
+        request.onsuccess = function () {
+          (request.result || []).forEach(function (key) { localPhotoCache[key] = true; });
+          resolve();
+        };
+        request.onerror = function () { resolve(); };
+      });
+    }).catch(function () {});
+  }
+
   function init() {
+    if (!telegramGatePassed()) {
+      // Приложение не инициализируется вовсе: карта и списки остаются
+      // пустыми и не могут случайно выглядеть как рабочие.
+      showGate();
+      return;
+    }
     cacheElements();
     loadState();
     initTelegram();
@@ -2223,9 +3213,10 @@ window.PHOTO_CREDITS = PHOTO_CREDITS;</script>
       bindEvents();
       applyStartParam();
       checkBadges();
+      primeLocalPhotoCache().then(startCloud);
     }).catch(function () {
       el.placeList.innerHTML = '<li class="place-card" style="display:block;cursor:default">' +
-        "Не удалось загрузить данные. Откройте dist/index.html или запустите локальный сервер.</li>";
+        "Не удалось загрузить данные. Откройте dist/index.html или запустите локальный сервер.";
     });
   }
 

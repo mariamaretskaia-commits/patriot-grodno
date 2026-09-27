@@ -1,0 +1,28 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "patriot-grodno-api",
+  "main": "src/index.js",
+  "compatibility_date": "2025-09-01",
+  "observability": {
+    "enabled": true
+  },
+  // Токен бота задаётся только через secret, в код не попадает:
+  //   npx wrangler secret put BOT_TOKEN
+  "vars": {
+    "ALLOWED_ORIGIN": "https://mariamaretskaia-commits.github.io"
+  },
+  "kv_namespaces": [
+    {
+      "binding": "STATE",
+      "id": "b3c868fd546e4819abef342070b3ecc7"
+    },
+    {
+      "binding": "INDEX",
+      "id": "e23e62d645de468da48efeacc22eaed2"
+    },
+    {
+      "binding": "BLOBS",
+      "id": "bb6faaac811042d3aef5897ed4e1eadd"
+    }
+  ]
+}

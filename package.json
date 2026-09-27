@@ -8,6 +8,12 @@
     "build": "node tools/build.mjs",
     "images": "python tools/optimize_images.py",
     "coords": "python tools/verify_coords.py",
-    "serve": "python -m http.server 8000"
+    "serve": "python -m http.server 8000",
+    "test:worker": "node worker/test/worker.test.mjs",
+    "cf:dev": "wrangler dev --config worker/wrangler.jsonc",
+    "cf:deploy": "wrangler deploy --config worker/wrangler.jsonc"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
   }
 }

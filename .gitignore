@@ -6,3 +6,4 @@ img/raw/*
 img/photo_candidates.json
 __pycache__/
 *.log
+.wrangler/

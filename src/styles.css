@@ -450,6 +450,130 @@ button { font: inherit; color: inherit; }
 }
 .toast.is-award { border-color: rgba(232, 182, 76, .55); color: var(--tg-gold); font-weight: 600; }
 
+/* --- Экран блокировки вне Telegram ------------------------------------ */
+.tgate {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: var(--tg-bg, #17212b);
+}
+.tgate[hidden] { display: none; }
+.tgate-inner { max-width: 380px; text-align: center; }
+.tgate-mark { font-size: 56px; color: var(--tg-gold, #e8b64c); line-height: 1; }
+.tgate-title { font-size: 1.4rem; margin: 12px 0 10px; }
+.tgate-text { color: var(--tg-muted, #9aa7b4); line-height: 1.55; margin: 0 0 22px; }
+.tgate-btn { display: inline-block; text-decoration: none; padding: 13px 22px; }
+.tgate-hint { color: var(--tg-muted, #9aa7b4); font-size: .82rem; margin-top: 16px; }
+
+/* Тело под замком не должно прокручиваться. */
+body.is-locked { overflow: hidden; }
+
+/* Под замком само приложение не показывается: пустая карта и пустые
+   списки выглядели бы как неисправность, а не как объяснение. */
+body.is-gated > .topbar,
+body.is-gated > main,
+body.is-gated > .sheet,
+body.is-gated > .toast,
+body.is-gated > .sync-dot { display: none; }
+
+/* --- Индикатор синхронизации ----------------------------------------- */
+.sync-dot {
+  position: fixed;
+  right: 12px;
+  bottom: 12px;
+  z-index: 1050;
+  display: none;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 11px;
+  border-radius: 999px;
+  font-size: .74rem;
+  background: var(--tg-surface-2);
+  border: 1px solid rgba(255, 255, 255, .14);
+  color: var(--tg-muted);
+  box-shadow: var(--shadow);
+}
+.sync-dot.is-visible { display: inline-flex; }
+.sync-dot.is-error { color: var(--tg-red); border-color: rgba(224, 108, 108, .4); }
+
+/* --- Галерея участников в карточке места ----------------------------- */
+.gallery { margin-top: 20px; padding-top: 16px; border-top: 1px solid rgba(255, 255, 255, .08); }
+.gallery[hidden] { display: none; }
+.gallery-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
+.gallery-title { font-weight: 600; font-size: .95rem; }
+.gallery-count { font-size: .78rem; color: var(--tg-muted); }
+.gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.gallery-item {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--tg-surface-2);
+  border: 1px solid rgba(255, 255, 255, .06);
+  cursor: zoom-in;
+  padding: 0;
+}
+.gallery-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.gallery-item.is-mine { border-color: rgba(232, 182, 76, .5); }
+.gallery-mine-tag {
+  position: absolute;
+  left: 5px;
+  bottom: 5px;
+  padding: 1px 6px;
+  border-radius: 6px;
+  font-size: .64rem;
+  background: rgba(0, 0, 0, .62);
+  color: var(--tg-gold);
+}
+.gallery-caption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 12px 6px 4px;
+  font-size: .68rem;
+  line-height: 1.25;
+  color: #fff;
+  background: linear-gradient(transparent, rgba(0, 0, 0, .78));
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.gallery-empty { color: var(--tg-muted); font-size: .84rem; }
+.gallery-note { color: var(--tg-muted); font-size: .8rem; margin-top: 10px; }
+.gallery-more { margin-top: 10px; }
+
+/* Просмотр фото во весь экран. */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 1300;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, .92);
+  padding: 16px;
+}
+.lightbox[hidden] { display: none; }
+.lightbox img { max-width: 100%; max-height: 82vh; border-radius: 12px; }
+.lightbox-caption { color: #dfe6ec; text-align: center; margin-top: 14px; max-width: 520px; line-height: 1.5; }
+.lightbox-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, .2);
+  background: rgba(255, 255, 255, .08);
+  color: #fff;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
 @media (min-width: 720px) {
   .view { max-width: 980px; margin: 0 auto; }
   .topbar { padding-left: max(16px, calc(50% - 490px)); padding-right: max(16px, calc(50% - 490px)); }

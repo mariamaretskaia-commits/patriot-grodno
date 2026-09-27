@@ -10,6 +10,7 @@ const paths = {
   template: resolve(root, "src/index.html"),
   styles: resolve(root, "src/styles.css"),
   app: resolve(root, "src/app.js"),
+  cloud: resolve(root, "src/cloud.js"),
   leafletCss: resolve(root, "src/vendor/leaflet/leaflet.css"),
   leafletJs: resolve(root, "src/vendor/leaflet/leaflet.js"),
   places: resolve(root, "data/places.json"),
@@ -49,7 +50,7 @@ function inlineLeafletCss(css, imageData) {
 }
 
 async function main() {
-  for (const key of ["template", "styles", "app", "leafletCss", "leafletJs", "places", "questions"]) {
+  for (const key of ["template", "styles", "app", "cloud", "leafletCss", "leafletJs", "places", "questions"]) {
     if (!existsSync(paths[key])) {
       throw new Error(`Отсутствует файл: ${paths[key]}`);
     }
@@ -84,11 +85,16 @@ async function main() {
   ].join("\n");
 
   let html = await readText(paths.template);
-  html = html.replace("/*{{LEAFLET_CSS}}*/", inlineLeafletCss(await readText(paths.leafletCss), imageData));
-  html = html.replace("/*{{CSS}}*/", await readText(paths.styles));
-  html = html.replace("/*{{LEAFLET_JS}}*/", await readText(paths.leafletJs));
-  html = html.replace("/*{{DATA}}*/", data);
-  html = html.replace("/*{{APP_JS}}*/", await readText(paths.app));
+  // Подстановка идёт функцией, а не строкой: в содержимом исходников
+  // встречаются последовательности $&, $' и $`, которые в строковом
+  // аргументе replace трактуются как спецсимволы и портят результат.
+  const inline = (marker, content) => html.replace(marker, () => content);
+  html = inline("/*{{LEAFLET_CSS}}*/", inlineLeafletCss(await readText(paths.leafletCss), imageData));
+  html = inline("/*{{CSS}}*/", await readText(paths.styles));
+  html = inline("/*{{LEAFLET_JS}}*/", await readText(paths.leafletJs));
+  html = inline("/*{{DATA}}*/", data);
+  html = inline("/*{{CLOUD_JS}}*/", await readText(paths.cloud));
+  html = inline("/*{{APP_JS}}*/", await readText(paths.app));
 
   const leftovers = html.match(/\/\*\{\{[A-Z_]+\}\}\*\//g);
   if (leftovers) throw new Error(`Не заменены плейсхолдеры: ${leftovers.join(", ")}`);
