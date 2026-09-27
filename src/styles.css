@@ -1,19 +1,19 @@
 :root {
-  --tg-bg: #17212b;
-  --tg-surface: #1e2a36;
-  --tg-surface-2: #243444;
-  --tg-text: #f2f5f7;
-  --tg-muted: #94a7b8;
-  --tg-accent: #2b5278;
-  --tg-accent-soft: #3a6d9c;
-  --tg-link: #6aa6d8;
+  --tg-bg: #121218;
+  --tg-surface: #1a1814;
+  --tg-surface-2: #23211a;
+  --tg-text: #efe9dc;
+  --tg-muted: #b0a898;
+  --tg-accent: #2a2a26;
+  --tg-accent-soft: #35352a;
+  --tg-link: #d4b87a;
   --tg-safe-top: 0px;
   --tg-safe-bottom: 0px;
   --tg-safe-left: 0px;
   --tg-safe-right: 0px;
-  --tg-gold: #e8b64c;
-  --tg-green: #4caf7d;
-  --tg-red: #e06c6c;
+  --tg-gold: #c9a84c;
+  --tg-green: #5a7a4e;
+  --tg-red: #9a2a2a;
   --radius: 16px;
   --radius-sm: 10px;
   --shadow: 0 8px 24px rgba(0, 0, 0, .35);
@@ -27,7 +27,7 @@ html, body {
   padding: 0;
   background: var(--tg-bg);
   color: var(--tg-text);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Playfair Display", Georgia, "Times New Roman", serif;
   font-size: 16px;
   line-height: 1.6;
   -webkit-tap-highlight-color: transparent;
@@ -58,13 +58,15 @@ button { font: inherit; color: inherit; }
 .brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
 
 .brand-mark {
-  width: 38px; height: 38px;
+  width: 42px; height: 42px;
   display: grid; place-items: center;
-  border-radius: 12px;
-  background: linear-gradient(145deg, var(--tg-accent-soft), var(--tg-accent));
+  border-radius: 50%;
+  background: linear-gradient(145deg, #3a3020, #2a2015);
+  border: 1.5px solid #8a6f3f;
   color: var(--tg-gold);
-  font-size: 20px;
+  font-size: 18px;
   flex: none;
+  box-shadow: inset 0 0 12px rgba(201,168,76,.18), 0 2px 8px rgba(0,0,0,.35);
 }
 
 .brand-title { font-weight: 650; font-size: 1.02rem; letter-spacing: .01em; }
@@ -326,10 +328,19 @@ button { font: inherit; color: inherit; }
 
 .passport-top { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
 .passport-avatar {
-  width: 56px; height: 56px; border-radius: 16px;
-  background: linear-gradient(145deg, var(--tg-accent-soft), var(--tg-accent));
+  width: 60px; height: 60px; border-radius: 16px;
+  background: linear-gradient(145deg, #2a2418, #181410);
+  border: 2px solid #8a6f3f;
   display: grid; place-items: center;
-  color: var(--tg-gold); font-size: 26px; flex: none;
+  color: var(--tg-gold); font-size: 28px; flex: none;
+  box-shadow: inset 0 0 16px rgba(201,168,76,.15), 0 4px 12px rgba(0,0,0,.4);
+  overflow: hidden;
+  position: relative;
+}
+.passport-avatar img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  border-radius: 14px;
 }
 .passport-rank { font-size: 1.15rem; font-weight: 700; }
 .passport-sub { color: var(--tg-muted); font-size: .85rem; }

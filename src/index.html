@@ -26,7 +26,7 @@
 <header class="topbar">
   <div class="topbar-row">
     <div class="brand">
-      <span class="brand-mark">★</span>
+      <div class="brand-mark" id="brandMark">★</div>
       <div>
         <div class="brand-title">Память Гродненщины</div>
         <div class="brand-sub" id="brandSub">19 мест памяти</div>
@@ -114,7 +114,9 @@
   <section class="view" id="view-passport">
     <div class="passport-card">
       <div class="passport-top">
-        <div class="passport-avatar">★</div>
+        <div class="passport-avatar" id="avatarImg">
+          <img src="img/avatar-user.jpg" alt="Аватар" onerror="this.style.display='none';this.parentNode.innerHTML='<span style=\'font-size:26px\'>★</span>';" />
+        </div>
         <div>
           <div class="passport-rank" id="passportRank">Начинающий</div>
           <div class="passport-sub" id="passportSub">0 очков</div>
