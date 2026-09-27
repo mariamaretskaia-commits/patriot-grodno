@@ -1442,6 +1442,7 @@ function tg() {
     cacheElements();
     loadState();
     initTelegram();
+    setAvatar("img/avatar-user.jpg");
     readData().then(function () {
       fillFilters();
       renderList();
