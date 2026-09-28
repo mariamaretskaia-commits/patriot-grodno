@@ -1,62 +1,23 @@
 {
-  "tank-t34-grodno": {
-    "title": "Hrodna T-34-85 Tank 2023-06-25 5641.jpg",
-    "author": "Mike1979 Russia",
-    "license": "CC BY-SA 3.0",
-    "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
-    "source_url": "https://commons.wikimedia.org/wiki/File%3AHrodna_T-34-85_Tank_2023-06-25_5641.jpg",
-    "date": "2023-06-25"
+  "dot-sonichi": {
+    "title": "ДОТ-памятник (д. Соничи). Общий вид",
+    "author": "Валерий М. (pomnite-nas.ru)",
+    "license": "Указан источник (сайт pomnite-nas.ru)",
+    "license_url": "http://pomnite-nas.ru",
+    "source_url": "http://pomnite-nas.ru/mshow.php?s_OID=1996",
+    "date": "2007-09-18"
   },
-  "memorial-pogranichnikam-grodno": {
-    "title": "Мемориал пограничникам в Гродно - запад.jpg",
-    "author": "Incnis Mrsi",
-    "license": "CC BY-SA 4.0",
-    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
-    "source_url": "https://commons.wikimedia.org/wiki/File%3A%D0%9C%D0%B5%D0%BC%D0%BE%D1%80%D0%B8%D0%B0%D0%BB_%D0%BF%D0%BE%D0%B3%D1%80%D0%B0%D0%BD%D0%B8%D1%87%D0%BD%D0%B8%D0%BA%D0%B0%D0%BC_%D0%B2_%D0%93%D1%80%D0%BE%D0%B4%D0%BD%D0%BE_-_%D0%B7%D0%B0%D0%BF%D0%B0%D0%B4.jpg",
-    "date": "2016-07-10"
+  "dyatlovo-bratskaya-mogila-gp-kozlovschina": {
+    "title": "10.jpg",
+    "author": "Дятловский райисполком",
+    "license": "лицензия автором не указана",
+    "license_url": "",
+    "source_url": "https://dyatlovo.gov.by/ru/mestapam-ru",
+    "source_name": "сайт Дятловского райисполкома",
+    "date": ""
   },
-  "shtalag-324-grodno": {
-    "title": "Помнік вязням шталага.jpg",
-    "author": "Vit Koz",
-    "license": "CC BY-SA 4.0",
-    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
-    "source_url": "https://commons.wikimedia.org/wiki/File%3A%D0%9F%D0%BE%D0%BC%D0%BD%D1%96%D0%BA_%D0%B2%D1%8F%D0%B7%D0%BD%D1%8F%D0%BC_%D1%88%D1%82%D0%B0%D0%BB%D0%B0%D0%B3%D0%B0.jpg",
-    "date": "2020-04-17"
-  },
-  "memorial-dyatlovo": {
-    "title": "Дети лихолетья.jpg",
-    "author": "Роман Франц",
-    "license": "CC BY-SA 4.0",
-    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
-    "source_url": "https://commons.wikimedia.org/wiki/File%3A%D0%94%D0%B5%D1%82%D0%B8_%D0%BB%D0%B8%D1%85%D0%BE%D0%BB%D0%B5%D1%82%D1%8C%D1%8F.jpg",
-    "date": "2020-08-08"
-  },
-  "memorial-smorgon": {
-    "title": "Мемарыял ахвярам ПСВ (Смаргонь)1.jpg",
-    "author": "DBatura",
-    "license": "CC0",
-    "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
-    "source_url": "https://commons.wikimedia.org/wiki/File%3A%D0%9C%D0%B5%D0%BC%D0%B0%D1%80%D1%8B%D1%8F%D0%BB_%D0%B0%D1%85%D0%B2%D1%8F%D1%80%D0%B0%D0%BC_%D0%9F%D0%A1%D0%92_%28%D0%A1%D0%BC%D0%B0%D1%80%D0%B3%D0%BE%D0%BD%D1%8C%291.jpg",
-    "date": "2023-08-21 13:25:34"
-  },
-  "memorial-lida": {
-    "title": "Изображение 2021-06-24 132120.png",
-    "author": "Wicovan",
-    "license": "CC BY-SA 4.0",
-    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
-    "source_url": "https://commons.wikimedia.org/wiki/File%3A%D0%98%D0%B7%D0%BE%D0%B1%D1%80%D0%B0%D0%B6%D0%B5%D0%BD%D0%B8%D0%B5_2021-06-24_132120.png",
-    "date": "2021-06-24"
-  },
-  "yuratishki-bratskaya": {
-    "title": "Памятник на братской могиле в г.п. Юратишках Ивьевского района Гродненской области.jpg",
-    "author": "Nehelenast",
-    "license": "CC BY-SA 4.0",
-    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
-    "source_url": "https://commons.wikimedia.org/wiki/File%3A%D0%9F%D0%B0%D0%BC%D1%8F%D1%82%D0%BD%D0%B8%D0%BA_%D0%BD%D0%B0_%D0%B1%D1%80%D0%B0%D1%82%D1%81%D0%BA%D0%BE%D0%B9_%D0%BC%D0%BE%D0%B3%D0%B8%D0%BB%D0%B5_%D0%B2_%D0%B3.%D0%BF._%D0%AE%D1%80%D0%B0%D1%82%D0%B8%D1%88%D0%BA%D0%B0%D1%85_%D0%98%D0%B2%D1%8C%D0%B5%D0%B2%D1%81%D0%BA%D0%BE%D0%B3%D0%BE_%D1%80%D0%B0%D0%B9%D0%BE%D0%BD%D0%B0_%D0%93%D1%80%D0%BE%D0%B4%D0%BD%D0%B5%D0%BD%D1%81%D0%BA%D0%BE%D0%B9_%D0%BE%D0%B1%D0%BB%D0%B0%D1%81%D1%82%D0%B8.jpg",
-    "date": "2017-08-05"
-  },
-  "dyatlovo-pamyatnyy-znak-deti-liholetya": {
-    "title": "11.jpg",
+  "dyatlovo-obelisk-slavy": {
+    "title": "12.jpg",
     "author": "Дятловский райисполком",
     "license": "лицензия автором не указана",
     "license_url": "",
@@ -82,8 +43,8 @@
     "source_name": "сайт Дятловского райисполкома",
     "date": ""
   },
-  "dyatlovo-obelisk-slavy": {
-    "title": "12.jpg",
+  "dyatlovo-pamyatnik-zhertvam-sozhzhennoy-derevni-gorodki": {
+    "title": "7.jpg",
     "author": "Дятловский райисполком",
     "license": "лицензия автором не указана",
     "license_url": "",
@@ -100,17 +61,8 @@
     "source_name": "сайт Дятловского райисполкома",
     "date": ""
   },
-  "dyatlovo-pamyatnik-zhertvam-sozhzhennoy-derevni-gorodki": {
-    "title": "7.jpg",
-    "author": "Дятловский райисполком",
-    "license": "лицензия автором не указана",
-    "license_url": "",
-    "source_url": "https://dyatlovo.gov.by/ru/mestapam-ru",
-    "source_name": "сайт Дятловского райисполкома",
-    "date": ""
-  },
-  "dyatlovo-zahoronenie-zhertv-voyny-gp-novoelnya-byvshaya-territoriya-l": {
-    "title": "8.jpg",
+  "dyatlovo-pamyatnyy-znak-deti-liholetya": {
+    "title": "11.jpg",
     "author": "Дятловский райисполком",
     "license": "лицензия автором не указана",
     "license_url": "",
@@ -127,13 +79,248 @@
     "source_name": "сайт Дятловского райисполкома",
     "date": ""
   },
-  "dyatlovo-bratskaya-mogila-gp-kozlovschina": {
-    "title": "10.jpg",
+  "dyatlovo-zahoronenie-zhertv-voyny-gp-novoelnya-byvshaya-territoriya-l": {
+    "title": "8.jpg",
     "author": "Дятловский райисполком",
     "license": "лицензия автором не указана",
     "license_url": "",
     "source_url": "https://dyatlovo.gov.by/ru/mestapam-ru",
     "source_name": "сайт Дятловского райисполкома",
     "date": ""
+  },
+  "fort-1-zagorany": {
+    "title": "Форт№I. Общий вид",
+    "author": "fortressgrodno.by",
+    "license": "Указан источник (сайт fortressgrodno.by)",
+    "license_url": "https://fortressgrodno.by",
+    "source_url": "https://fortressgrodno.by/assets/gallery/Форт№I/146.jpg"
+  },
+  "fort-10-shchetchinovo": {
+    "title": "Форт№X. Германские солдаты заняты извлечением металлических конструкций",
+    "author": "fortressgrodno.by",
+    "license": "Указан источник (сайт fortressgrodno.by)",
+    "license_url": "https://fortressgrodno.by",
+    "source_url": "https://fortressgrodno.by/assets/gallery/Форт№X/132.jpg"
+  },
+  "fort-11-yalovshchina": {
+    "title": "Форт№XI. Остатки временного убежища",
+    "author": "fortressgrodno.by",
+    "license": "Указан источник (сайт fortressgrodno.by)",
+    "license_url": "https://fortressgrodno.by",
+    "source_url": "https://fortressgrodno.by/assets/gallery/Форт№XI/133.jpg"
+  },
+  "fort-12-lapenki": {
+    "title": "Форт№XII. Фрагмент генерального плана крепости",
+    "author": "fortressgrodno.by",
+    "license": "Указан источник (сайт fortressgrodno.by)",
+    "license_url": "https://fortressgrodno.by",
+    "source_url": "https://fortressgrodno.by/assets/gallery/Форт№XII/205.jpg"
+  },
+  "fort-13-grandichi": {
+    "title": "Форт№XIII. Незаконченный бруствер",
+    "author": "fortressgrodno.by",
+    "license": "Указан источник (сайт fortressgrodno.by)",
+    "license_url": "https://fortressgrodno.by",
+    "source_url": "https://fortressgrodno.by/assets/gallery/Форт№XIII/134.jpg"
+  },
+  "fort-2-naumovichi": {
+    "title": "Форт№II",
+    "author": "fortressgrodno.by",
+    "license": "Указан источник (сайт fortressgrodno.by)",
+    "license_url": "https://fortressgrodno.by",
+    "source_url": "https://fortressgrodno.by/assets/gallery/Форт№II/95.jpg"
+  },
+  "fort-3-labno-ogorodniki": {
+    "title": "Форт №III. Фото с «парадной» стороны форта",
+    "author": "fortress.grodno.by",
+    "license": "Указан источник (сайт fortress.grodno.by)",
+    "license_url": "https://www.fortress.grodno.by",
+    "source_url": "https://www.fortress.grodno.by/_Photos/F_3_06.jpg"
+  },
+  "fort-4-korolino": {
+    "title": "Форт№IV. Общий вид",
+    "author": "fortressgrodno.by",
+    "license": "Указан источник (сайт fortressgrodno.by)",
+    "license_url": "https://fortressgrodno.by",
+    "source_url": "https://fortressgrodno.by/assets/gallery/Форт№IV/107.jpg"
+  },
+  "fort-5-gnevenchina": {
+    "title": "Форт№V",
+    "author": "fortressgrodno.by",
+    "license": "Указан источник (сайт fortressgrodno.by)",
+    "license_url": "https://fortressgrodno.by",
+    "source_url": "https://fortressgrodno.by/assets/gallery/Форт№V/113.jpg"
+  },
+  "fort-6-kamenka": {
+    "title": "Форт№VI",
+    "author": "fortressgrodno.by",
+    "license": "Указан источник (сайт fortressgrodno.by)",
+    "license_url": "https://fortressgrodno.by",
+    "source_url": "https://fortressgrodno.by/assets/gallery/Форт№VI/242.jpg"
+  },
+  "fort-7-malaya-olshanka": {
+    "title": "Форт№VII",
+    "author": "fortressgrodno.by",
+    "license": "Указан источник (сайт fortressgrodno.by)",
+    "license_url": "https://fortressgrodno.by",
+    "source_url": "https://fortressgrodno.by/assets/gallery/Форт№VII/149.jpg"
+  },
+  "fort-8-gibulichi": {
+    "title": "Форт №VIII. Общий вид",
+    "author": "fortress.grodno.by",
+    "license": "Указан источник (сайт fortress.grodno.by)",
+    "license_url": "https://www.fortress.grodno.by",
+    "source_url": "https://www.fortress.grodno.by/_Photos/F_8_02.jpg"
+  },
+  "fort-9-pogorany": {
+    "title": "Форт№IX",
+    "author": "fortressgrodno.by",
+    "license": "Указан источник (сайт fortressgrodno.by)",
+    "license_url": "https://fortressgrodno.by",
+    "source_url": "https://fortressgrodno.by/assets/gallery/Форт№IX/130.jpg"
+  },
+  "kurgan-slavy-grodno": {
+    "title": "Курган Славы (Гродно)",
+    "author": "izvezda.by (Цифровая звезда)",
+    "license": "Указан источник (сайт izvezda.by)",
+    "license_url": "https://izvezda.by",
+    "source_url": "https://izvezda.by/ru/monuments-ru/getElement/4574/"
+  },
+  "memorial-berestovitsa": {
+    "title": "Мемориал Славы (Берестовица)",
+    "author": "Берестовицкий райисполком",
+    "license": "Указан источник (сайт berestovitsa.gov.by)",
+    "license_url": "https://berestovitsa.gov.by",
+    "source_url": "https://berestovitsa.gov.by/uploads/files/Uvekovechenie/Memorial-Slavy.jpg"
+  },
+  "memorial-dyatlovo": {
+    "title": "Дети лихолетья.jpg",
+    "author": "Роман Франц",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File%3A%D0%94%D0%B5%D1%82%D0%B8_%D0%BB%D0%B8%D1%85%D0%BE%D0%BB%D0%B5%D1%82%D1%8C%D1%8F.jpg",
+    "date": "2020-08-08"
+  },
+  "memorial-korelichi": {
+    "title": "Мемориальный комплекс «Звезда» (Кореличи)",
+    "author": "korelichi-rck.by (Кореличский РЦК)",
+    "license": "Указан источник (сайт korelichi-rck.by)",
+    "license_url": "http://korelichi-rck.by",
+    "source_url": "http://korelichi-rck.by/wp-content/uploads/2020/02/Miting_23-fevralya_Den-zashhitnikov-Otechestva_Korelichi-2.jpg",
+    "date": "2020-02-22"
+  },
+  "memorial-lida": {
+    "title": "Изображение 2021-06-24 132120.png",
+    "author": "Wicovan",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File%3A%D0%98%D0%B7%D0%BE%D0%B1%D1%80%D0%B0%D0%B6%D0%B5%D0%BD%D0%B8%D0%B5_2021-06-24_132120.png",
+    "date": "2021-06-24"
+  },
+  "memorial-pogranichnikam-grodno": {
+    "title": "Мемориал пограничникам в Гродно - запад.jpg",
+    "author": "Incnis Mrsi",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File%3A%D0%9C%D0%B5%D0%BC%D0%BE%D1%80%D0%B8%D0%B0%D0%BB_%D0%BF%D0%BE%D0%B3%D1%80%D0%B0%D0%BD%D0%B8%D1%87%D0%BD%D0%B8%D0%BA%D0%B0%D0%BC_%D0%B2_%D0%93%D1%80%D0%BE%D0%B4%D0%BD%D0%BE_-_%D0%B7%D0%B0%D0%BF%D0%B0%D0%B4.jpg",
+    "date": "2016-07-10"
+  },
+  "memorial-shaulichy": {
+    "title": "Мемориальный комплекс «Шауличи»",
+    "author": "volkovysknews.by (районная газета «Наш час»)",
+    "license": "Указан источник (сайт volkovysknews.by)",
+    "license_url": "https://volkovysknews.by",
+    "source_url": "https://volkovysknews.by/images/myimages/2024/7.iiul/shaulichi/Шауличи-(13).jpg"
+  },
+  "memorial-smorgon": {
+    "title": "Мемарыял ахвярам ПСВ (Смаргонь)1.jpg",
+    "author": "DBatura",
+    "license": "CC0",
+    "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "source_url": "https://commons.wikimedia.org/wiki/File%3A%D0%9C%D0%B5%D0%BC%D0%B0%D1%80%D1%8B%D1%8F%D0%BB_%D0%B0%D1%85%D0%B2%D1%8F%D1%80%D0%B0%D0%BC_%D0%9F%D0%A1%D0%92_%28%D0%A1%D0%BC%D0%B0%D1%80%D0%B3%D0%BE%D0%BD%D1%8C%291.jpg",
+    "date": "2023-08-21 13:25:34"
+  },
+  "obelsk-belkovshchina": {
+    "title": "Памятник землякам, погибшим в годы Великой Отечественной войны (аг. Белковщина)",
+    "author": "savehistory.by (РОО «Патриоты Беларуси»); данные Сморгонского райисполкома",
+    "license": "Указан источник (сайт savehistory.by)",
+    "license_url": "https://www.savehistory.by",
+    "source_url": "https://www.savehistory.by/karta/4063-ag-belkovshchina-pamyatnik-zemlyakam-pogibshim-v-gody-velikoy-otechestvennoy-voyny/"
+  },
+  "pamyatnik-artilleriya-volkovysk": {
+    "title": "Пушка на перекрёстке улиц Жолудева и Ленина (Волковыск)",
+    "author": "volkovysknews.by (районная газета «Наш час»)",
+    "license": "Указан источник (сайт volkovysknews.by)",
+    "license_url": "https://volkovysknews.by",
+    "source_url": "https://volkovysknews.by/images/myimages/2024/6.iiun/eksponaty/Пушка-на-ул.jpg",
+    "date": "2024-06-23"
+  },
+  "pamyatnik-budenovka": {
+    "title": "Памятник воинам-землякам (д. Буденовка)",
+    "author": "oshmiany.gov.by (Ошмянский райисполком)",
+    "license": "Указан источник (сайт oshmiany.gov.by)",
+    "license_url": "https://oshmiany.gov.by",
+    "source_url": "https://oshmiany.gov.by/uploads/files/VZ/Katalog-voinskix-zaxoronenij.pdf"
+  },
+  "pamyatnik-kreivantsy": {
+    "title": "Памятник воинам-землякам (аг. Крейванцы)",
+    "author": "oshmiany.gov.by (Ошмянский райисполком)",
+    "license": "Указан источник (сайт oshmiany.gov.by)",
+    "license_url": "https://oshmiany.gov.by",
+    "source_url": "https://oshmiany.gov.by/uploads/files/VZ/Katalog-voinskix-zaxoronenij.pdf"
+  },
+  "pamyatnik-mostiishki": {
+    "title": "Памятник воинам-землякам (д. Мостилишки)",
+    "author": "oshmiany.gov.by (Ошмянский райисполком)",
+    "license": "Указан источник (сайт oshmiany.gov.by)",
+    "license_url": "https://oshmiany.gov.by",
+    "source_url": "https://oshmiany.gov.by/uploads/files/VZ/Katalog-voinskix-zaxoronenij.pdf"
+  },
+  "pamyatnik-semerniki": {
+    "title": "Памятник воинам-землякам (д. Семерники)",
+    "author": "oshmiany.gov.by (Ошмянский райисполком)",
+    "license": "Указан источник (сайт oshmiany.gov.by)",
+    "license_url": "https://oshmiany.gov.by",
+    "source_url": "https://oshmiany.gov.by/uploads/files/VZ/Katalog-voinskix-zaxoronenij.pdf"
+  },
+  "shtalag-324-grodno": {
+    "title": "Помнік вязням шталага.jpg",
+    "author": "Vit Koz",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File%3A%D0%9F%D0%BE%D0%BC%D0%BD%D1%96%D0%BA_%D0%B2%D1%8F%D0%B7%D0%BD%D1%8F%D0%BC_%D1%88%D1%82%D0%B0%D0%BB%D0%B0%D0%B3%D0%B0.jpg",
+    "date": "2020-04-17"
+  },
+  "tank-t34-grodno": {
+    "title": "Hrodna T-34-85 Tank 2023-06-25 5641.jpg",
+    "author": "Mike1979 Russia",
+    "license": "CC BY-SA 3.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File%3AHrodna_T-34-85_Tank_2023-06-25_5641.jpg",
+    "date": "2023-06-25"
+  },
+  "voinskoe-kladbische-belusha": {
+    "title": "Воинское кладбище на Белуша (Гродно)",
+    "author": "Евгений Лебедь (vgr.by, «Вечерний Гродно»)",
+    "license": "Указан источник (сайт vgr.by)",
+    "license_url": "https://vgr.by",
+    "source_url": "https://vgr.by/wp-content/uploads/2021/11/belusha_1.jpg",
+    "date": "2021-11-04"
+  },
+  "yuratishki-bratskaya": {
+    "title": "Памятник на братской могиле в г.п. Юратишках Ивьевского района Гродненской области.jpg",
+    "author": "Nehelenast",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File%3A%D0%9F%D0%B0%D0%BC%D1%8F%D1%82%D0%BD%D0%B8%D0%BA_%D0%BD%D0%B0_%D0%B1%D1%80%D0%B0%D1%82%D1%81%D0%BA%D0%BE%D0%B9_%D0%BC%D0%BE%D0%B3%D0%B8%D0%BB%D0%B5_%D0%B2_%D0%B3.%D0%BF._%D0%AE%D1%80%D0%B0%D1%82%D0%B8%D1%88%D0%BA%D0%B0%D1%85_%D0%98%D0%B2%D1%8C%D0%B5%D0%B2%D1%81%D0%BA%D0%BE%D0%B3%D0%BE_%D1%80%D0%B0%D0%B9%D0%BE%D0%BD%D0%B0_%D0%93%D1%80%D0%BE%D0%B4%D0%BD%D0%B5%D0%BD%D1%81%D0%BA%D0%BE%D0%B9_%D0%BE%D0%B1%D0%BB%D0%B0%D1%81%D1%82%D0%B8.jpg",
+    "date": "2017-08-05"
+  },
+  "zastava-imeni-usova": {
+    "title": "Памятный знак на месте гибели В. М. Усова (застава им. Усова)",
+    "author": "pogranec.by (новостной портал пограничной службы)",
+    "license": "Указан источник (сайт pogranec.by)",
+    "license_url": "https://pogranec.by",
+    "source_url": "https://pogranec.by/wp-content/uploads/2021/08/zastava3-1024x683.jpg",
+    "date": "2021-08-30"
   }
 }
