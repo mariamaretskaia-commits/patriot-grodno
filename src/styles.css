@@ -29,7 +29,7 @@
   --tg-text: var(--text);
   --tg-muted: var(--muted);
   --tg-accent: var(--surface-2);
-  --tg-accent-soft: #4a4038;
+  --tg-accent-soft: #5a4431;
   --tg-link: var(--heading);
   --tg-safe-top: 0px;
   --tg-safe-bottom: 0px;
@@ -38,7 +38,7 @@
   /* Вместо золота Telegram — приглушённые тона темы. Смысл
      «верно/неверно» сохраняется, а цвета не спорят с акцентом. */
   --tg-gold: var(--accent);
-  --tg-green: #93a06a;
+  --tg-green: #b3a15c;
   --tg-red: #c97a63;
 
   /* Полупрозрачные линии: тёплые, а не белые, иначе на тёмном фоне
@@ -318,7 +318,7 @@ button { font: inherit; color: inherit; }
 }
 
 .place-check { width: 26px; height: 26px; border-radius: 50%; border: 2px solid rgba(224, 201, 173, .28); display: grid; place-items: center; font-size: .8rem; color: transparent; flex: none; }
-.place-card.is-visited .place-check { border-color: var(--tg-green); background: rgba(147, 160, 106, .22); color: var(--tg-green); }
+.place-card.is-visited .place-check { border-color: var(--tg-green); background: rgba(179, 161, 92, .26); color: var(--tg-green); }
 
 .marker-pin {
   width: 30px; height: 30px;
@@ -330,7 +330,7 @@ button { font: inherit; color: inherit; }
   display: grid; place-items: center;
 }
 .marker-pin span { transform: rotate(45deg); color: var(--tg-gold); font-size: 13px; line-height: 1; }
-.marker-pin.is-visited { background: linear-gradient(145deg, #a9b57e, #6f7a4c); }
+.marker-pin.is-visited { background: linear-gradient(145deg, #d8b878, #8a6d2f); }
 .marker-pin.is-active { outline: 3px solid rgba(224, 201, 173, .6); outline-offset: 2px; }
 
 .quiz-head { display: flex; align-items: center; justify-content: space-between; }
@@ -366,7 +366,7 @@ button { font: inherit; color: inherit; }
   display: grid; place-items: center;
   font-size: .78rem; color: var(--tg-muted);
 }
-.quiz-option.is-correct { border-color: var(--tg-green); background: rgba(147, 160, 106, .18); }
+.quiz-option.is-correct { border-color: var(--tg-green); background: rgba(179, 161, 92, .2); }
 .quiz-option.is-wrong { border-color: var(--tg-red); background: rgba(201, 122, 99, .16); }
 .quiz-option:disabled { cursor: default; }
 
@@ -453,6 +453,43 @@ button { font: inherit; color: inherit; }
 .stat-label { color: var(--tg-muted); font-size: .76rem; margin-top: 2px; }
 
 .section-title { margin: 26px 0 12px; font-size: 1.02rem; }
+
+.sources-fold { margin: 26px 0 12px; border: 0; }
+.sources-fold summary {
+  list-style: none;
+  cursor: pointer;
+  font-size: 1.02rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 14px;
+  background: var(--tg-surface);
+  border: 1px solid var(--tg-line-soft);
+  border-radius: var(--radius);
+  color: var(--heading);
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.sources-fold summary::-webkit-details-marker { display: none; }
+.sources-fold summary::after {
+  content: "›";
+  margin-left: auto;
+  color: var(--tg-gold);
+  font-size: 1.15rem;
+  line-height: 1;
+  transition: transform .18s ease;
+}
+.sources-fold[open] summary { border-radius: var(--radius) var(--radius) 0 0; border-bottom-color: transparent; }
+.sources-fold[open] summary::after { transform: rotate(90deg); }
+.sources-fold .sources {
+  background: var(--tg-surface);
+  border: 1px solid var(--tg-line-soft);
+  border-top: 0;
+  border-radius: 0 0 var(--radius) var(--radius);
+  padding: 12px 14px 14px;
+}
+
 .badges { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
 
 .badge {

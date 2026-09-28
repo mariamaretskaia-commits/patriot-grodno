@@ -336,7 +336,18 @@ async function main() {
     check("два id разных юзеров не совпали", firstEntryId !== otherEntryId, true);
 
     const noAuth = await call(env, "https://api.example.com/api/gallery");
-    check("галерея без auth 401", noAuth.status, 401);
+    check("галерея без auth публична", noAuth.status, 200);
+    const anon = await noAuth.json();
+    check("анониму видно все фото", anon.entries.length, 2);
+    check("аноним не удаляет", anon.canDelete.length, 0);
+    check("аноним не модератор", anon.isModerator, false);
+    check("анониму не отдан author", JSON.stringify(anon).indexOf("author"), -1);
+
+    // Запись анониму закрыта: загрузка и удаление требуют initData.
+    const anonUpload = await call(env, "https://api.example.com/api/photos?placeId=memorial-lida", { method: "POST" });
+    check("анонимная загрузка 401", anonUpload.status, 401);
+    const anonDel = await call(env, "https://api.example.com/api/photos/" + firstEntryId, { method: "DELETE" });
+    check("анонимное удаление 401", anonDel.status, 401);
   }
 
   console.log("\n8. выдача и удаление фото");
@@ -344,6 +355,10 @@ async function main() {
     const get = await call(env, "https://api.example.com/api/photos/" + firstEntryId, { headers: auth1 });
     check("фото отдаётся", get.status, 200);
     check("Content-Type", get.headers.get("Content-Type"), "image/jpeg");
+
+    const anonGet = await call(env, "https://api.example.com/api/photos/" + firstEntryId);
+    check("фото публично отдаётся", anonGet.status, 200);
+    check("байты те же", (await anonGet.arrayBuffer()).byteLength, jpegBytes.length);
 
     const delOther = await call(env, "https://api.example.com/api/photos/" + firstEntryId, {
       method: "DELETE",

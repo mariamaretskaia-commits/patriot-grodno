@@ -137,16 +137,25 @@ export default {
       return fail("not_found", 404, {}, cors);
     }
 
+    // Галерея и байты фотографий — публичная витрина: их можно читать и без
+    // initData. Подпись требуется только для записи — прогресса, загрузки и
+    // удаления фотографий. При наличии initData чтение остаётся
+    // персональным: модератор видит авторов и может удалять записи.
     const auth = await authenticate(request, env);
-    if (!auth.ok) {
+    const user = auth.ok ? auth.user : null;
+    const moderator = user ? isModerator(user.id, env) : false;
+    const isPublicRead =
+      isGallery ||
+      (isPhotos && request.method === "GET") ||
+      (photoMatch && request.method === "GET");
+
+    if (!isPublicRead && !auth.ok) {
       if (auth.reason === "bot_token_missing") {
         return fail("server_misconfigured", 503, { reason: auth.reason }, cors);
       }
       const status = auth.reason === "missing_init_data" ? 401 : 403;
       return fail("unauthorized", status, { reason: auth.reason }, cors);
     }
-    const user = auth.user;
-    const moderator = isModerator(user.id, env);
 
     try {
       if (isState) return await handleState(request, env, user, cors);
@@ -324,7 +333,7 @@ async function handleGallery(request, env, user, cors, { moderator = false } = {
       // попадает весь срез, а не только собственные фотографии.
       canDelete: moderator
         ? slice.map((entry) => entry.id)
-        : slice.filter((entry) => entry.userId === user.id).map((entry) => entry.id),
+        : user ? slice.filter((entry) => entry.userId === user.id).map((entry) => entry.id) : [],
       isModerator: moderator,
     },
     200,

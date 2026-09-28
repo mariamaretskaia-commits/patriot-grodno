@@ -243,11 +243,11 @@
     var api = tg();
     if (!api || !supportsVersion(api, "6.1")) return;
     try {
-      var params = api.themeParams || {};
-      var header = params.header_bg_color || params.secondary_bg_color || params.bg_color;
-      var background = params.bg_color || params.secondary_bg_color;
-      if (header && typeof api.setHeaderColor === "function") api.setHeaderColor(header);
-      if (background && typeof api.setBackgroundColor === "function") api.setBackgroundColor(background);
+      // Нативные цвета буфера закреплены за фирменной палитрой («тёплый
+      // тёмно-коричневый с золотом»): вид не должен сменяться вслед за
+      // темой Telegram, иначе собранный стиль разъезжается.
+      if (typeof api.setHeaderColor === "function") api.setHeaderColor("#14100b");
+      if (typeof api.setBackgroundColor === "function") api.setBackgroundColor("#14100b");
     } catch (err) {}
   }
 
@@ -269,16 +269,12 @@
     var api = tg();
     if (!api) return;
     try {
+      // Интерфейс использует фиксированную тёплую палитру из CSS и намеренно
+      // не переопределяется цветами темы Telegram: подписи и поверхности
+      // сохраняют фирменный коричнево-золотой стиль, а не «зелёно-серый»
+      // из настроек пользователя.
       api.ready();
       api.expand();
-      var params = api.themeParams || {};
-      var root = document.documentElement.style;
-      if (params.bg_color) root.setProperty("--tg-bg", params.bg_color);
-      if (params.secondary_bg_color) root.setProperty("--tg-surface", params.secondary_bg_color);
-      if (params.text_color) root.setProperty("--tg-text", params.text_color);
-      if (params.hint_color) root.setProperty("--tg-muted", params.hint_color);
-      if (params.button_color) root.setProperty("--tg-accent", params.button_color);
-      if (params.link_color) root.setProperty("--tg-link", params.link_color);
       updateNativeChrome();
       updateSafeArea();
     } catch (err) {}
@@ -803,7 +799,9 @@
 
   function loadGallery(placeId) {
     var box = $("gallery");
-    if (!box || !window.Cloud || !window.Cloud.isEnabled()) {
+    // Галерея — публичная витрина: показываем её всем, даже когда входа в
+    // Telegram нет (initData отсутствует). Тогда сетка читается анонимно.
+    if (!box || !window.Cloud) {
       if (box) {
         box.hidden = true;
       }
@@ -1394,15 +1392,28 @@
   }
 
   function renderSources() {
-    var seen = {};
-    places.forEach(function (place) {
-      var text = place.source || "";
-      if (!text || seen[text]) return;
-      seen[text] = true;
-      el.sources.innerHTML += "<li>" + escapeHtml(text) + "</li>";
-    });
-    el.sources.innerHTML += "<li>Фотографии: Wikimedia Commons, свободные лицензии " +
-      "(CC0, CC BY-SA). Снимки уменьшены, авторы и условия указаны в карточках мест.</li>";
+    var items = [
+      "Каталог воинских захоронений Ошмянского района — oshmiany.gov.by",
+      "Паспорта объектов историко-культурного наследия — mrik.gov.by",
+      "Перечень экскурсий по фортификационным сооружениям бассейна Августовского канала — belarustourism.by",
+      "Перечень памятников г. Гродно — grodno.gov.by",
+      "Туристический портал Берестовицкого района — visitberestovitsa.by",
+      "Велосипедный маршрут «Дорогами памяти народной» — grodnovisafree.grsu.by",
+      "Материалы Лидского, Ивьевского и Ошмянского райисполкомов",
+      "Памятные места Дятловского района — dyatlovo.gov.by",
+      "Портал «Цифровая звезда» (ОО «БРСМ») — izvezda.by",
+      "Газета «Наш час» (Волковыск) — volkovysknews.by",
+      "Гродненская правда — grodnonews.by",
+      "Проект Save History — savehistory.by",
+      "Свислочский историко-краеведческий музей — svisloch.museum.by",
+      "Веломаршруты райисполкомов — voronovo.gov.by",
+      "Базы данных Центральной библиотеки г. Гродно — persony.grodno.by",
+      "OpenStreetMap (ODbL) — подложка карты, сверка координат (атрибуция в углу карты)",
+      "Wikimedia Commons — фотографии мест (CC0, CC BY-SA); авторы и условия лицензий указаны в карточках мест"
+    ];
+    el.sources.innerHTML = items.map(function (text) {
+      return "<li>" + escapeHtml(text) + "</li>";
+    }).join("");
   }
 
   function updateStats() {

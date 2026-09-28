@@ -292,15 +292,16 @@
 
   // --- Галерея и фотографии --------------------------------------------
 
-  // Сервер хранит не больше MAX_PHOTOS снимков на всех, поэтому список
-  // метаданных запрашивается целиком: постраничный обмен с сервером на
-  // телефоне дороже, чем один ответ. Показ порциями — уже на клиенте.
+  // Галерея — публичная витрина: читается даже без Telegram initData. Внутри
+  // Telegram заголовок всё равно уходит, и модератор получает лишние поля.
   function gallery(placeId) {
-    if (!isEnabled()) return Promise.resolve(null);
     var path = "/api/gallery?limit=" + GALLERY_FETCH_LIMIT +
       (placeId ? "&placeId=" + encodeURIComponent(placeId) : "");
     return request(path, { method: "GET" }).then(readJson).catch(function (err) {
-      setStatus("error", err);
+      // Вне Telegram чтение галереи может не пройти по CORS — это не сбой
+      // синхронизации, поэтому статус «нет сети» поднимаем только внутри
+      // Telegram, где галерея обязана работать.
+      if (isEnabled()) setStatus("error", err);
       return null;
     });
   }
@@ -328,11 +329,10 @@
       });
   }
 
-  // Байты фотографии: обычный <img src> не годится, потому что запрос
-  // требует заголовок с initData. Файл скачивается и показывается через
-  // object URL.
+  // Байты фотографии: обычный <img src> не годится, потому что внутри
+  // Telegram запрос уходит с заголовком initData (он нужен модератору).
+  // Файл скачивается и показывается через object URL.
   function fetchPhoto(entryId) {
-    if (!isEnabled()) return Promise.resolve(null);
     return request("/api/photos/" + encodeURIComponent(entryId), { method: "GET" })
       .then(function (response) { return response.blob(); })
       .catch(function () { return null; });
