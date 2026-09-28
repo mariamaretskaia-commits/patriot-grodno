@@ -6,6 +6,8 @@
 
   var POINTS = { visit: 10, quiz: 15, photo: 20 };
   var FORT_TYPE = "фортификация";
+  // Доля максимума очков, с которой выдаётся главный значок.
+  var PATRIOT_SHARE = 0.6;
 
   // Общая галерея показывает кадр достаточно крупным, поэтому фото
   // уменьшается до 1280 px по большей стороне. Сервер принимает до 3 МБ,
@@ -354,26 +356,69 @@
     return total;
   }
 
+  // Максимум очков считается из реальных данных приложения, а не вписывается
+  // константой: при росте каталога пороги пересчитываются сами.
+  // Учитываются все фотографии галереи, а не только загруженные пользователем,
+  // иначе порог рос бы вместе с прогрессом и значок становился бы недостижимым.
+  function availablePhotoCount() {
+    return Object.keys(photos).length;
+  }
+
+  function maxPoints() {
+    return places.length * POINTS.visit + questions.length * POINTS.quiz +
+      availablePhotoCount() * POINTS.photo;
+  }
+
+  function patriotPoints() {
+    return Math.round(maxPoints() * PATRIOT_SHARE);
+  }
+
+  // Форты Гродненской крепости. Закрытые объекты (на территории воинских
+  // частей) в значок не входят: их невозможно посетить.
+  function fortsInfo() {
+    var all = places.filter(function (place) { return place.type === FORT_TYPE; });
+    var open = all.filter(function (place) { return place.access !== "closed"; });
+    return { all: all, open: open, closed: all.length - open.length };
+  }
+
+  // Согласование существительного с числом: 1 место, 2 места, 5 мест.
+  function plural(number, one, few, many) {
+    var n10 = number % 10;
+    var n100 = number % 100;
+    if (n10 === 1 && n100 !== 11) return one;
+    if (n10 >= 2 && n10 <= 4 && (n100 < 10 || n100 >= 20)) return few;
+    return many;
+  }
+
   function badgeDefs() {
-    var forts = places.filter(function (place) { return place.type === FORT_TYPE; });
+    var forts = fortsInfo();
     return [
       {
-        id: "first", icon: "🌱", name: "Первый шаг", hint: "Посетите 1 место",
+        id: "first", icon: "🌱", name: "Первый шаг",
+        hint: "Посетите любое 1 место из " + places.length,
         test: function () { return visitedCount() >= 1; }
       },
       {
-        id: "forts", icon: "🏰", name: "Хранитель фортов", hint: "Посетите все форты (" + forts.length + ")",
+        id: "forts", icon: "🏰", name: "Хранитель фортов",
+        hint: "Посетите все доступные форты Гродненской крепости — " + forts.open.length +
+          (forts.closed ? " из " + forts.all.length + " (" + forts.closed + " " +
+            plural(forts.closed, "закрыт", "закрыты", "закрыто") + ")" : ""),
         test: function () {
-          return forts.length > 0 && forts.every(function (place) { return state.visited[place.id]; });
+          return forts.open.length > 0 &&
+            forts.open.every(function (place) { return state.visited[place.id]; });
         }
       },
       {
-        id: "quiz", icon: "🎓", name: "Знаток", hint: "15 верных ответов",
+        id: "quiz", icon: "🎓", name: "Знаток",
+        hint: "Верно ответьте на все вопросы (" + questions.length + ")",
         test: function () { return correctCount() >= questions.length && questions.length > 0; }
       },
       {
-        id: "patriot", icon: "🏅", name: "Патриот Гродненщины", hint: "500 очков",
-        test: function () { return points() >= 500; }
+        id: "patriot", icon: "🏅", name: "Патриот Гродненщины",
+        hint: "Наберите " + patriotPoints() + " очков из " + maxPoints() +
+          " (посетите " + places.length + " " + plural(places.length, "место", "места", "мест") +
+          ", ответьте на вопросы, добавьте фото)",
+        test: function () { return points() >= patriotPoints(); }
       }
     ];
   }
@@ -395,10 +440,12 @@
   }
 
   function rankLabel(value) {
-    if (value >= 600) return "Герой памяти";
-    if (value >= 350) return "Патриот";
-    if (value >= 150) return "Исследователь";
-    if (value >= 50) return "Знаток мест";
+    var max = maxPoints();
+    if (max <= 0) return "Начинающий";
+    if (value >= patriotPoints()) return "Герой памяти";
+    if (value >= max * 0.4) return "Патриот";
+    if (value >= max * 0.2) return "Исследователь";
+    if (value >= max * 0.06) return "Знаток мест";
     return "Начинающий";
   }
 
@@ -1221,11 +1268,20 @@
   function renderBadges() {
     el.badges.innerHTML = badgeDefs().map(function (badge) {
       var earned = Boolean(state.badges[badge.id]);
+      // Картинка значка, если она собрана в страницу; иначе — эмодзи.
+      var art = badgeArt(badge.id);
       return '<div class="badge' + (earned ? " is-earned" : "") + '">' +
-        '<div class="badge-icon">' + badge.icon + "</div>" +
+        '<div class="badge-icon">' + art + "</div>" +
         '<div class="badge-name">' + escapeHtml(badge.name) + "</div>" +
         '<div class="badge-hint">' + escapeHtml(badge.hint) + "</div></div>";
     }).join("");
+  }
+
+  function badgeArt(id) {
+    var src = typeof BADGES !== "undefined" && BADGES ? BADGES[id] : "";
+    if (!src) return '<span class="badge-emoji" aria-hidden="true">' + badgeDefs()
+      .filter(function (badge) { return badge.id === id; })[0].icon + "</span>";
+    return '<img class="badge-img" src="' + src + '" alt="" width="44" height="44">';
   }
 
   function renderSources() {
@@ -1253,7 +1309,7 @@
     el.statBadges.textContent = Object.keys(state.badges).filter(function (key) { return state.badges[key]; }).length;
     el.passportRank.textContent = rankLabel(total);
     el.passportSub.textContent = total + " очков · " + rankLabel(total);
-    el.passportFill.style.width = Math.min(100, (total / 500) * 100) + "%";
+    el.passportFill.style.width = Math.min(100, (total / maxPoints()) * 100) + "%";
     renderBadges();
   }
 

@@ -7,3 +7,6 @@ img/photo_candidates.json
 __pycache__/
 *.log
 .wrangler/
+
+# Scrape-продукты выгрузки: воспроизводятся tools/fetch_forts.mjs
+tools/forts_raw.txt

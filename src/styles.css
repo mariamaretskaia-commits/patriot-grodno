@@ -464,7 +464,12 @@ button { font: inherit; color: inherit; }
   opacity: .48;
 }
 .badge.is-earned { opacity: 1; border-color: rgba(224, 201, 173, .45); background: linear-gradient(180deg, rgba(224, 201, 173, .12), var(--tg-surface)); }
-.badge-icon { font-size: 28px; }
+.badge-icon { display: grid; place-items: center; min-height: 44px; }
+.badge-emoji { font-size: 28px; line-height: 1; }
+/* Значок приходит PNG/WebP с прозрачным фоном, поэтому размер задаём
+   в CSS, а в атрибутах — только для случая, когда картинка не загрузилась. */
+.badge-img { width: 44px; height: 44px; object-fit: contain; }
+.badge:not(.is-earned) .badge-img { filter: grayscale(1) brightness(.72); }
 .badge-name { font-weight: 600; font-size: .86rem; margin-top: 6px; }
 .badge-hint { color: var(--tg-muted); font-size: .72rem; margin-top: 3px; }
 

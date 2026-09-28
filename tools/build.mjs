@@ -17,6 +17,9 @@ const paths = {
   questions: resolve(root, "data/questions.json"),
   credits: resolve(root, "data/photo_credits.json"),
   photos: resolve(root, "img/opt"),
+  // Значки лежат отдельной папкой: у них нет кредитов, и в img/opt их быть
+  // не должно — catalog_check требует биекцию фото и кредитов.
+  badges: resolve(root, "img/badges"),
   out: resolve(root, "dist/index.html"),
   site: resolve(root, "index.html"),
   // Иконки лежат отдельными файлами: собранная страница — один HTML,
@@ -53,8 +56,23 @@ async function collectPhotos() {
   return out;
 }
 
-function inlineLeafletCss(css, imageData) {
-  let out = css;
+// Значки встраиваются так же, как фото мест, но отдельной картой:
+// имена файлов совпадают с id значков (first, quiz, forts, patriot).
+async function collectBadges() {
+  if (!existsSync(paths.badges)) return {};
+  const files = await readdir(paths.badges);
+  const out = {};
+  for (const file of files.sort()) {
+    if (!IMAGE_EXT.test(file)) continue;
+    const id = file.replace(IMAGE_EXT, "");
+    const bytes = await readFile(resolve(paths.badges, file));
+    const mime = file.endsWith(".png") ? "image/png" : file.endsWith(".jpg") || file.endsWith(".jpeg") ? "image/jpeg" : "image/webp";
+    out[id] = `data:${mime};base64,${bytes.toString("base64")}`;
+  }
+  return out;
+}
+
+function inlineLeafletCss(css, imageData) {  let out = css;
   for (const [file, dataUri] of Object.entries(imageData)) {
     out = out.replaceAll(`url(images/${file})`, `url(${dataUri})`);
   }
@@ -77,6 +95,7 @@ async function main() {
   }
 
   const photos = await collectPhotos();
+  const badges = await collectBadges();
   const places = JSON.parse(await readText(paths.places));
   const questions = JSON.parse(await readText(paths.questions));
   const credits = existsSync(paths.credits) ? JSON.parse(await readText(paths.credits)) : {};
@@ -89,10 +108,12 @@ async function main() {
     `const PLACES = ${JSON.stringify(places)};`,
     `const QUESTIONS = ${JSON.stringify(questions)};`,
     `const PHOTOS = ${JSON.stringify(photos)};`,
+    `const BADGES = ${JSON.stringify(badges)};`,
     `const PHOTO_CREDITS = ${JSON.stringify(photoCredits)};`,
     "window.PLACES = PLACES;",
     "window.QUESTIONS = QUESTIONS;",
     "window.PHOTOS = PHOTOS;",
+    "window.BADGES = BADGES;",
     "window.PHOTO_CREDITS = PHOTO_CREDITS;"
   ].join("\n");
 
@@ -152,6 +173,8 @@ async function main() {
   }
   console.log(`  мест: ${places.length}, вопросов: ${questions.length}`);
   console.log(`  фото встроено: ${Object.keys(photos).length}, заглушек: ${places.length - Object.keys(photos).length}`);
+  const badgeIds = Object.keys(badges).sort();
+  console.log(`  значков встроено: ${badgeIds.length}${badgeIds.length ? " (" + badgeIds.join(", ") + ")" : ""}`);
   if (Object.keys(photoCredits).length !== Object.keys(photos).length) {
     console.log(`  внимание: кредитов ${Object.keys(photoCredits).length}, фото ${Object.keys(photos).length}`);
   }
