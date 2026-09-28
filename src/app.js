@@ -49,6 +49,7 @@
   var quizIndex = 0;
   var quizRound = 0;
   var quizRoundCorrect = 0;
+  var quizDistrict = "";
   var tileFailures = 0;
   var photoInput = null;
   var avatarInput = null;
@@ -66,7 +67,7 @@
       "quizMeta", "quizScore", "quizFill", "quizCard", "quizQuestion",
       "quizOptions", "quizFeedback", "quizVerdict", "quizExplanation",
       "quizNext", "quizRestart", "quizFinish", "finishScore", "finishText",
-      "finishRestart", "passportRank", "passportSub", "passportFill",
+      "finishRestart", "quizDistrict", "passportRank", "passportSub", "passportFill",
       "statVisited", "statQuiz", "statPhotos", "statBadges", "badges",
       "sources", "shareBtn", "resetProgress", "sheet", "sheetBackdrop",
       "sheetClose", "sheetBody", "toast", "sheetPanel",
@@ -390,8 +391,40 @@
     return many;
   }
 
+  // Все районы из каталога мест (порядок вывода сохраняется как в местах).
+  function catalogDistricts() {
+    var out = [];
+    places.forEach(function (place) {
+      if (out.indexOf(place.district) < 0) out.push(place.district);
+    });
+    return out;
+  }
+
+  // Районы, в которых пользователь посетил хотя бы одно место.
+  function visitedDistricts() {
+    var out = [];
+    places.forEach(function (place) {
+      if (state.visited[place.id] && out.indexOf(place.district) < 0) out.push(place.district);
+    });
+    return out;
+  }
+
+  // Районы, в которых пользователь верно ответил хотя бы на один вопрос.
+  function correctDistricts() {
+    var out = [];
+    questions.forEach(function (q) {
+      if (q.district && state.correct[q.id] && out.indexOf(q.district) < 0) out.push(q.district);
+    });
+    return out;
+  }
+
   function badgeDefs() {
     var forts = fortsInfo();
+    var districts = catalogDistricts();
+    var visitedDistrictsNow = visitedDistricts();
+    var quizDistrictsNow = correctDistricts();
+    // Районы для викторины: те, по которым есть хотя бы один вопрос.
+    var quizTarget = quizDistricts();
     return [
       {
         id: "first", icon: "🌱", name: "Первый шаг",
@@ -412,6 +445,18 @@
         id: "quiz", icon: "🎓", name: "Знаток",
         hint: "Верно ответьте на все вопросы (" + questions.length + ")",
         test: function () { return correctCount() >= questions.length && questions.length > 0; }
+      },
+      {
+        id: "explorer", icon: "🗺️", name: "Исследователь Гродненщины",
+        hint: "Посетите место в каждом районе области (" + visitedDistrictsNow.length +
+          " из " + districts.length + ")",
+        test: function () { return districts.length > 0 && visitedDistrictsNow.length >= districts.length; }
+      },
+      {
+        id: "expert", icon: "📚", name: "Краевед",
+        hint: "Верно ответьте на вопрос в каждом районе викторины (" + quizDistrictsNow.length +
+          " из " + quizTarget.length + ")",
+        test: function () { return quizTarget.length > 0 && quizDistrictsNow.length >= quizTarget.length; }
       },
       {
         id: "patriot", icon: "🏅", name: "Патриот Гродненщины",
@@ -492,19 +537,57 @@
       " · снимок уменьшен</div>";
   }
 
-  function fillFilters() {
-    var districts = [];
-    var types = [];
-    places.forEach(function (place) {
-      if (districts.indexOf(place.district) < 0) districts.push(place.district);
-      if (types.indexOf(place.type) < 0) types.push(place.type);
+  function uniqueSorted(values) {
+    var out = [];
+    values.forEach(function (v) {
+      if (out.indexOf(v) < 0) out.push(v);
     });
-    districts.sort();
-    types.sort();
+    out.sort();
+    return out;
+  }
+
+  // Заполняет оба селектора фильтров с учётом выбранного значения другой оси:
+  // при выбранном районе показываем только типы мест этого района, при
+  // выбранном типе — только районы, где такие места есть.
+  function fillFilters() {
+    var district = el.filterDistrict.value;
+    var type = el.filterType.value;
+    // Типы — из выбранного района (если он выбран), иначе из всех мест.
+    var forTypes = district
+      ? places.filter(function (place) { return place.district === district; })
+      : places;
+    // Районы — из выбранного типа (если он выбран), иначе из всех мест.
+    var forDistricts = type
+      ? places.filter(function (place) { return place.type === type; })
+      : places;
+    var districts = uniqueSorted(forDistricts.map(function (place) { return place.district; }));
+    var types = uniqueSorted(forTypes.map(function (place) { return place.type; }));
     el.filterDistrict.innerHTML = '<option value="">Все районы</option>' +
-      districts.map(function (v) { return '<option value="' + escapeHtml(v) + '">' + escapeHtml(v) + "</option>"; }).join("");
+      districts.map(function (v) {
+        var selected = v === district ? " selected" : "";
+        return '<option value="' + escapeHtml(v) + '"' + selected + ">" + escapeHtml(v) + "</option>";
+      }).join("");
     el.filterType.innerHTML = '<option value="">Все типы</option>' +
-      types.map(function (v) { return '<option value="' + escapeHtml(v) + '">' + escapeHtml(v) + "</option>"; }).join("");
+      types.map(function (v) {
+        var selected = v === type ? " selected" : "";
+        return '<option value="' + escapeHtml(v) + '"' + selected + ">" + escapeHtml(v) + "</option>";
+      }).join("");
+  }
+
+  // При совпадении фильтров стало пусто — сбрасываем менее специфичную ось,
+  // чтобы выбор района/типа всегда давал результат, а «ничего не найдено»
+  // оставалось только для непустого поискового запроса.
+  function reconcileFilters() {
+    if (filteredPlaces().length > 0 || (!el.filterDistrict.value && !el.filterType.value)) return;
+    // Тип — вторичная ось: освобождаем её первой, затем пытаемся район.
+    if (el.filterType.value) {
+      el.filterType.value = "";
+      if (filteredPlaces().length > 0) { fillFilters(); return; }
+    }
+    if (el.filterDistrict.value) {
+      el.filterDistrict.value = "";
+      fillFilters();
+    }
   }
 
   function filteredPlaces() {
@@ -1184,8 +1267,33 @@
     return copy;
   }
 
+  // Вопросы, попадающие в викторину: выбранный район или все, если «Все районы».
+  function quizPool() {
+    if (!quizDistrict) return questions;
+    return questions.filter(function (q) { return q.district === quizDistrict; });
+  }
+
+  // Районы, по которым в викторине есть хотя бы один вопрос.
+  function quizDistricts() {
+    var out = [];
+    questions.forEach(function (q) {
+      if (q.district && out.indexOf(q.district) < 0) out.push(q.district);
+    });
+    out.sort();
+    return out;
+  }
+
+  function fillQuizFilters() {
+    var districts = quizDistricts();
+    el.quizDistrict.innerHTML = '<option value="">Все районы</option>' +
+      districts.map(function (v) {
+        var selected = v === quizDistrict ? " selected" : "";
+        return '<option value="' + escapeHtml(v) + '"' + selected + ">" + escapeHtml(v) + "</option>";
+      }).join("");
+  }
+
   function startQuiz() {
-    quizOrder = shuffle(questions);
+    quizOrder = shuffle(quizPool());
     quizIndex = 0;
     quizRoundCorrect = 0;
     el.quizFinish.hidden = true;
@@ -1197,7 +1305,8 @@
   function renderQuestion() {
     var question = quizOrder[quizIndex];
     if (!question) return;
-    el.quizMeta.textContent = "Вопрос " + (quizIndex + 1) + " из " + quizOrder.length;
+    el.quizMeta.textContent = "Вопрос " + (quizIndex + 1) + " из " + quizOrder.length +
+      (quizDistrict ? " · " + quizDistrict : "");
     el.quizScore.textContent = correctCount() + " / " + questions.length;
     el.quizFill.style.width = ((quizIndex / quizOrder.length) * 100) + "%";
     el.quizQuestion.textContent = question.question;
@@ -1388,12 +1497,21 @@
       if (target === "map" && map) setTimeout(function () { map.invalidateSize(); }, 60);
     });
 
-    el.filterDistrict.addEventListener("change", renderList);
-    el.filterType.addEventListener("change", renderList);
+    el.filterDistrict.addEventListener("change", function () {
+      fillFilters();
+      reconcileFilters();
+      renderList();
+    });
+    el.filterType.addEventListener("change", function () {
+      fillFilters();
+      reconcileFilters();
+      renderList();
+    });
     el.filterReset.addEventListener("click", function () {
       el.filterDistrict.value = "";
       el.filterType.value = "";
       el.filterSearch.value = "";
+      fillFilters();
       renderList();
     });
 
@@ -1444,6 +1562,10 @@
     el.quizNext.addEventListener("click", function () {
       if (quizIndex >= quizOrder.length - 1) finishQuiz();
       else { quizIndex += 1; renderQuestion(); }
+    });
+    el.quizDistrict.addEventListener("change", function () {
+      quizDistrict = el.quizDistrict.value;
+      startQuiz();
     });
     el.quizRestart.addEventListener("click", startQuiz);
     el.finishRestart.addEventListener("click", startQuiz);
@@ -1611,6 +1733,7 @@
     if (avatarRemove) avatarRemove.addEventListener("click", clearAvatar);
     readData().then(function () {
       fillFilters();
+      fillQuizFilters();
       renderList();
       renderSources();
       updateStats();

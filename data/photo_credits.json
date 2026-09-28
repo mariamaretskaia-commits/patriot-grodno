@@ -322,5 +322,80 @@
     "license_url": "https://pogranec.by",
     "source_url": "https://pogranec.by/wp-content/uploads/2021/08/zastava3-1024x683.jpg",
     "date": "2021-08-30"
+  },
+  "voronovo-bratskaya": {
+    "title": "у братской могилы в Вороново (1).jpg",
+    "author": "Гродненская правда, grodnonews.by",
+    "license": "Указан источник (сайт grodnonews.by)",
+    "license_url": "https://grodnonews.by",
+    "source_url": "https://s3-minsk.becloud.by/upload-3ea2dd93a4574872842963d763a8ca31/medialibrary/fab/fab8f0128065dce34541824a731f492c.jpg",
+    "source_name": "Гродненская правда, статья «Переправы Александра Канарчика»",
+    "date": "2020-02-27"
+  },
+  "zelva-memorial": {
+    "title": "Братская могила погибшим воинам и партизанам, г. п. Зельва",
+    "author": "izvezda.by (Цифровая звезда)",
+    "license": "Указан источник (сайт izvezda.by)",
+    "license_url": "https://izvezda.by",
+    "source_url": "https://izvezda.by/ru/monuments-ru/getElement/6296/",
+    "date": ""
+  },
+  "mosty-bratskaya": {
+    "title": "Братская могила советских воинов и партизан в г. Мосты",
+    "author": "izvezda.by (Цифровая звезда)",
+    "license": "Указан источник (сайт izvezda.by)",
+    "license_url": "https://izvezda.by",
+    "source_url": "https://izvezda.by/ru/monuments-ru/getElement/5904/",
+    "date": ""
+  },
+  "novogrudok-voinskoe": {
+    "title": "Братская могила в г. Новогрудок",
+    "author": "izvezda.by (Цифровая звезда)",
+    "license": "Указан источник (сайт izvezda.by)",
+    "license_url": "https://izvezda.by",
+    "source_url": "https://izvezda.by/ru/monuments-ru/getElement/5847/",
+    "date": ""
+  },
+  "slonim-petralevichi": {
+    "title": "Памятник на месте массового уничтожения (Петралевичская гора)",
+    "author": "izvezda.by (Цифровая звезда)",
+    "license": "Указан источник (сайт izvezda.by)",
+    "license_url": "https://izvezda.by",
+    "source_url": "https://izvezda.by/ru/monuments-ru/getElement/7187/",
+    "date": ""
+  },
+  "svisloch-bratskaya": {
+    "title": "bratskaya_mogila_svisloch_1.jpg",
+    "author": "Свислочский историко-краеведческий музей",
+    "license": "Указан источник (сайт svisloch.museum.by)",
+    "license_url": "http://svisloch.museum.by",
+    "source_url": "http://svisloch.museum.by/files/node_images/bratskaya_mogila_svisloch_1.jpg",
+    "source_name": "Сайт Свислочского историко-краеведческого музея",
+    "date": ""
+  },
+  "shchuchin-bratskaya": {
+    "title": "Братская могила советских воинов и партизан, г. Щучин",
+    "author": "Save History, savehistory.by",
+    "license": "Указан источник (сайт savehistory.by)",
+    "license_url": "https://savehistory.by",
+    "source_url": "https://savehistory.by/upload/iblock/c41/rvtpeverzeulhtx82djxalmau5s0bloj.jpg",
+    "source_name": "Проект Save History",
+    "date": ""
+  },
+  "ostrovets-kemelishki": {
+    "title": "Братская могила в агрогородке Кемелишки Островецкого района",
+    "author": "izvezda.by (Цифровая звезда)",
+    "license": "Указан источник (сайт izvezda.by)",
+    "license_url": "https://izvezda.by",
+    "source_url": "https://izvezda.by/ru/monuments-ru/getElement/5859/",
+    "date": ""
+  },
+  "ostrovets-mihalishki": {
+    "title": "Памятный знак погибшим лётчикам в агрогородке Михалишки Островецкого района",
+    "author": "izvezda.by (Цифровая звезда)",
+    "license": "Указан источник (сайт izvezda.by)",
+    "license_url": "https://izvezda.by",
+    "source_url": "https://izvezda.by/ru/monuments-ru/getElement/5869/",
+    "date": ""
   }
 }
